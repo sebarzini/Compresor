@@ -3,19 +3,33 @@
 
 #include <stdio.h>
 
-void log(char* arg,char* arg1, char* data){
-    printf("[DEBUG] %s - %s: %s\n", arg, arg1, data);
-}
+// ============================================================================
+//   CONFIGURACIÓN: COMENTA ESTA LÍNEA PARA APAGAR EL DEBUG
+// ============================================================================
+#define MODO_DEBUG 
 
-void log(char* arg,char* arg1, int data){
-    printf("[DEBUG] %s - %s: %d\n", arg, arg1, data);
-}
+// ============================================================================
+//   DEFINICIÓN DE MACROS DE DEPURACIÓN
+// ============================================================================
+#ifdef MODO_DEBUG
 
-void log(char* arg,char* arg1, unsigned long data){
-    printf("[DEBUG] %s - %s: %lu\n", arg, arg1, data);
-}
+    #define DEBUG_PRINT(fmt, ...) printf("[DEBUG] " fmt, ##__VA_ARGS__)
+    
+    #define DEBUG_TRACE(fmt, ...) \
+        printf("[TRACE] (%s:%d): " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 
-void log(char* arg, unsigned int arg1, char* data){
-    printf("[DEBUG] %s - %u: %s\n", arg, arg1, data);
-}
+    #define DEBUG_WARN_IF(condicion, fmt, ...) \
+        if (condicion) { printf("[WARN] " fmt, ##__VA_ARGS__); }
+
+#else
+
+    // Si MODO_DEBUG no está definido, las macros se transforman en (void)0.
+    // Para el compilador, esto equivale a escribir un número literal o nada.
+    // Lo ignora por completo en la mismísima fase de preprocesamiento.
+    #define DEBUG_PRINT(fmt, ...)          ((void)0)
+    #define DEBUG_TRACE(fmt, ...)          ((void)0)
+    #define DEBUG_WARN_IF(condicion, fmt, ...) ((void)0)
+
+#endif
+
 #endif
