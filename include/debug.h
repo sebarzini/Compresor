@@ -4,6 +4,15 @@
 #include <stdio.h>
 
 // ============================================================================
+//   POSIBLES MEJORAS FUTURAS Y/O ARCHIVO DE LOG
+// ============================================================================
+// __FILE__ archivo de ejecucion
+// __LINE__ linea de codigo en el archivo
+// __DATE__ fecha de compilacion
+// __TIME__ hora de compilacion
+// __func__ o __FUNCTION__ nombre de la funcion en ejecucion actual
+
+// ============================================================================
 //   CONFIGURACIÓN: COMENTA ESTA LÍNEA PARA APAGAR EL DEBUG
 // ============================================================================
 #define MODO_DEBUG 
