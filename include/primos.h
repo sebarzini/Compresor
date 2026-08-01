@@ -19,11 +19,11 @@ char* get_random_string(int y, char *out);
 /* Objetivo: Obtener un numero primo menor a 100 asociado a un numero de entrada (lista 1).
    Entrada: n (numero entero cualquiera).
    Salida: Un numero primo predefinido, constante para el mismo valor de n. */
-int get_primoA(int n);
+int get_primoA(unsigned int n);
 
 /* Objetivo: Obtener un numero primo menor a 100 asociado a un numero de entrada (lista 2).
    Entrada: n (numero entero cualquiera).
    Salida: Un numero primo predefinido, constante para el mismo valor de n, diferente al de get_primoA. */
-int get_primoB(int n);
+int get_primoB(unsigned int n);
 
 #endif

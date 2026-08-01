@@ -61,8 +61,8 @@ inline bool crear_directorio(const char *ruta) {
 
 // Objetivo: Mostrar en consola la configuración de plataforma detectada
 void imprimir_configuracion_sistema(void) {
-    printf("Sistema Operativo: %s\n", OS_NAME);[cite: 1]
-    printf("Separador de carpetas: %c\n", PATH_SEP);[cite: 1]
+    printf("Sistema Operativo: %s\n", OS_NAME);
+    printf("Separador de carpetas: %c\n", PATH_SEP);
 }
 
 #endif

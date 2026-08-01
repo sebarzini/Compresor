@@ -13,7 +13,7 @@
 // __func__ o __FUNCTION__ nombre de la funcion en ejecucion actual
 
 // ============================================================================
-//   CONFIGURACIÓN: COMENTA ESTA LÍNEA PARA APAGAR EL DEBUG
+//   CONFIGURACIÓN: INSERTA O BORRA ESTE DEFINE PARA ENTRAR O NO EN MODO DEBUG
 // ============================================================================
 #define MODO_DEBUG 
 

@@ -1,28 +1,28 @@
-cmake_minimum_required(VERSION 3.10)
-project(compresor LANGUAGES C)
+cmake_minimum_required(VERSION 3.15)
+project(Compilador C)
 
-# 1. Forzar estándar ANSI C (C90)
-set(CMAKE_C_STANDARD 90)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
-
-# 2. CONFIGURACIÓN CRUCIAL: Forzar Símbolos de Depuración (-g)
-# Al fijar esto en 'Debug', CMake añade automáticamente las banderas necesarias
-# para que GDB y Valgrind puedan leer el programa línea por línea.
+# Forzar el modo Debug si el usuario no especificó uno (activa -g para GDB)
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Elige el tipo de construccion" FORCE)
 endif()
 
-# Opciones específicas para compiladores basados en GCC/Clang (Linux, Mac, MinGW en Windows)
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-    # -g: Genera símbolos detallados para GDB
-    # -O0: Apaga optimizaciones para que el código binario coincida exacto con tus líneas de texto
-    add_compile_options(-g -O0)
-endif()
+# Estándar de C
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# 3. Directorio de cabeceras (.h)
+# Buscar TODOS los archivos fuente de la lógica interna en 'src' (excluyendo main.c)
+# Esto nos permite reutilizarlos en las pruebas sin duplicar código
+file(GLOB COMPILER_SOURCES "src/*.c")
+list(REMOVE_ITEM COMPILER_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
+
+# Hacer que la carpeta 'include' sea visible globalmente para todos los objetivos
 include_directories(include)
 
-# 4. Compilar la aplicación principal
-file(GLOB_RECURSE MAIN_SOURCES "src/*.c")
-add_executable(compresor ${MAIN_SOURCES})
+# Ejecutable principal del compilador
+add_executable(mi_compilador src/main.c ${COMPILER_SOURCES})
+
+# Pasar los archivos fuente de la lógica al subdirectorio de pruebas
+set(COMPILER_SOURCES ${COMPILER_SOURCES} PARENT_SCOPE)
+
+# Incluir la carpeta de pruebas al proceso de compilación
+add_subdirectory(test)

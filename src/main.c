@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "debug"
+#include "debug.h"
 
 int main(void) {
     printf("Hola mundo\n");
