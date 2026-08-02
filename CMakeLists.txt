@@ -19,10 +19,12 @@ list(REMOVE_ITEM COMPILER_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
 include_directories(include)
 
 # Ejecutable principal del compilador
-add_executable(mi_compilador src/main.c ${COMPILER_SOURCES})
+add_executable(mi_compilador src/main.c ${COMPILER_SOURCES}
+    src/rotacion.c
+    include/tipos_gen.h)
 
 # Pasar los archivos fuente de la lógica al subdirectorio de pruebas
-set(COMPILER_SOURCES ${COMPILER_SOURCES} PARENT_SCOPE)
+#set(COMPILER_SOURCES ${COMPILER_SOURCES} PARENT_SCOPE)
 
 # Incluir la carpeta de pruebas al proceso de compilación
 add_subdirectory(test)

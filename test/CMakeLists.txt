@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 # Lista aquí cada uno de tus archivos de prueba independientes
 # Cada uno generará su propio binario ejecutable
-set(TEST_FILES "test_debug.c")
+#set(TEST_FILES "test_debug.c")
+file(GLOB TEST_FILES "*.c" "test/*.c")
 
 # Iterar sobre la lista para crear los ejecutables de prueba automáticamente
 foreach(TEST_FILE ${TEST_FILES})
