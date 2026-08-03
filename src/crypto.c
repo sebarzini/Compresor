@@ -1,5 +1,6 @@
 #include "crypto.h"
 
+
 byte* hash_pass(char* pass){
 
 // Obtención del primo mapeado ($P$):
@@ -49,3 +50,19 @@ byte* hash_pass(char* pass){
     vaciar_lista(lista);
     return hash;
 } 
+
+byte* random_bytes(int n){
+    
+    byte* bytes = (byte*)malloc(sizeof(byte) * n);
+    if (bytes == NULL) {
+        printf("Error al asignar memoria para los bytes aleatorios.\n");
+        return NULL;
+    }
+    memset(bytes, 0, n); // Inicializa la memoria a cero
+
+    for (int i = 0; i < n; i++) {
+        bytes[i] = (byte)(rand() % 256); // Genera un byte aleatorio entre 0 y 255
+    }
+
+    return bytes;
+}
