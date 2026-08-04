@@ -20,5 +20,6 @@ t_lista_ptr liberar_nodo(t_lista_ptr nodo);
 void vaciar_lista(t_lista_ptr lista);
 byte cabecera_lista(t_lista_ptr lista);
 byte cola_lista(t_lista_ptr lista);
+t_lista_ptr crear_lista(void* p_arreglo, unsigned int cantidad);
 
 #endif // MTH_ROTACION_H
