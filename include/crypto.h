@@ -9,5 +9,5 @@ byte* hash_pass(char* pass);
 byte* random_bytes(int n);
 
 t_lista_ptr getListaPass(char* pass);
-t_lista_ptr getListaHash();
+t_lista_ptr getListaHash(int len);
 byte encode(byte dato, t_lista_ptr listaPass, t_lista_ptr listaHash);
