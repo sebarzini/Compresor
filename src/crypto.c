@@ -1,5 +1,39 @@
 #include "crypto.h"
 
+t_lista_ptr getListaPass(char* pass){
+    t_lista_ptr ret = NULL;
+    byte* campo = hash_pass(pass){
+    int len = PrimoB(strlen(pass));
+
+    for (int i = 0; i < len; i++){
+        argegar_nodo (ret, campo[i];
+    }
+    free(campo);
+    return ret;
+}
+
+t_lista_ptr getListaHash(int len){
+    t_lista_ptr ret = NULL;
+    byte* campo = random_bytes(len);
+
+    for (int i = 0; i < len; i++){
+        argegar_nodo (ret, campo[i];
+    }
+    free(campo);
+    return ret;
+}
+
+byte encode(byte dato, t_lista_ptr listaPass, t_lista_ptr listaHash){
+    byte ret = 0;
+
+    // XOR con las cabeceras.
+
+    // rotar lista de pass
+
+    // rotar lista de Hash
+    
+    return ret;
+}
 
 byte* hash_pass(char* pass){
 
