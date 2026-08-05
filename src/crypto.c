@@ -1,12 +1,27 @@
 #include "crypto.h"
 
+boolean pass_check(char* pass, byte* hash){
+    size_t len_pass = strlen(pass);
+    size_t len_hash = get_primoA(len_pass);
+
+    byte* hash_calculado = hash_pass(pass);
+    if (hash_calculado == NULL) {
+        printf("Error al calcular el hash de la contraseña.\n");
+        return 0; // Retorna falso si hay un error
+    }
+
+    boolean resultado = (memcmp(hash_calculado, hash, len_hash) == 0);
+    free(hash_calculado);
+    return resultado;
+}
+
 t_lista_ptr getListaPass(char* pass){
     t_lista_ptr ret = NULL;
-    byte* campo = hash_pass(pass){
-    int len = PrimoB(strlen(pass));
+    byte* campo = hash_pass(pass);
+    int len = get_primoA(strlen(pass));
 
     for (int i = 0; i < len; i++){
-        argegar_nodo (ret, campo[i];
+        ret = crear_nodo (ret, campo[i]);
     }
     free(campo);
     return ret;
@@ -17,21 +32,65 @@ t_lista_ptr getListaHash(int len){
     byte* campo = random_bytes(len);
 
     for (int i = 0; i < len; i++){
-        argegar_nodo (ret, campo[i];
+        ret = crear_nodo (ret, campo[i]);
     }
     free(campo);
     return ret;
 }
 
-byte encode(byte dato, t_lista_ptr listaPass, t_lista_ptr listaHash){
+byte encode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
     byte ret = 0;
+    byte b = (*listaHash)->dato;
+    byte a = (*listaPass)->dato;
 
     // XOR con las cabeceras.
+    ret = dato ^ a ^ b;
 
     // rotar lista de pass
-
+    *listaPass = rotar_char(*listaPass, ret%11);
+printf(">> Rotando lista de pass %d posiciones [%i](%i - %i).\n", ret%11, dato, a, b);
     // rotar lista de Hash
+ //   *listaHash = rotar_char(*listaHash, -ret%5);
+    return ret;
+}
+
+byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
+    byte ret = 0;
     
+    // rotar lista de pass
+    *listaPass = rotar_char(*listaPass, -(dato%13));
+    // rotar lista de Hash
+    //    *listaHash = rotar_char(*listaHash, dato%3);
+    // XOR con las cabeceras.
+    byte a = (*listaPass)->dato;
+    byte b = (*listaHash)->dato;
+    ret = dato ^ a ^ b;
+    printf("<< Rotando lista de pass %d posiciones [%i](%i - %i).\n", -(dato%13), ret, a, b);
+    return ret;
+}
+
+byte* encode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
+    byte* ret = (byte*)malloc(sizeof(byte) * len);
+    if (ret == NULL) {
+        printf("Error al asignar memoria para el buffer codificado.\n");
+        return NULL;
+    }
+    for (int i = 0; i < len; i++){
+        ret[i] = encode(buffer[i], listaPass, listaHash);
+    }
+    return ret;
+}
+
+byte* decode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
+    byte* ret = (byte*)malloc(sizeof(byte) * len);
+    if (ret == NULL) {
+        printf("Error al asignar memoria para el buffer codificado.\n");
+        return NULL;
+    }
+
+    for (int i = 0; i < len; i++){
+        ret[i] = decode(buffer[i], listaPass, listaHash);
+    }
     return ret;
 }
 
@@ -60,25 +119,27 @@ byte* hash_pass(char* pass){
 // Creación del estado circular (9*X bytes):
 //      Se inicializa un lista rotativa en RAM, que contendrá los caracteres de la contraseña y se rotará en cada iteración.
     t_lista_ptr lista = NULL;
+    rotacion_inicial = 0; // Inicializamos la rotación inicial a cero
     
 // Modifico el valor de cada byte de la contraseña, rotándolo en función del primo y del índice,
 //      y lo inserto en la lista circular.
     for (unsigned int indice = 0; indice < len_salida; indice++) {
-        byte dato = pass[indice % len_pass];
-        rotacion_inicial = (rotacion_inicial + dato) % len_salida;
+        byte dato = pass[indice % len_pass]; //Obtengo el byte de la contraseña, repitiéndolo si es necesario
+        rotacion_inicial ^= dato;
         int rotacion = ((primo * dato)+ indice) % 8; // Rotación de 0 a 7 bits
-        rotar( (byte)dato, rotacion); // Rotar el byte antes de insertarlo en la lista
+        dato = rotar(dato, rotacion); // Rotar el byte antes de insertarlo en la lista
         lista = crear_nodo(lista, dato);
     }
 
-// Se realiza la rotación de la lista circular en rotacion_inicial.
+    rotacion_inicial = rotacion_inicial % len_salida; // Aseguramos que la rotación inicial esté dentro del rango de la lista
+    // Se realiza la rotación de la lista circular en rotacion_inicial.
         lista = rotar_char(lista, rotacion_inicial);
 
 // Se extraen los bytes de la lista circular y se almacenan en el hash de salida.
     for (unsigned int indice = 0; indice < len_salida; indice++) {
-        hash[indice] = lista->dato;
         rotacion = (primo * indice)% len_salida;
         lista = rotar_char(lista, rotacion); // Rotar la lista en cada iteración
+        hash[indice] = lista->dato;
     }
 
     vaciar_lista(lista);

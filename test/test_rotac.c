@@ -61,12 +61,16 @@ int main(void) {
 
     /* 4. Prueba de rotar_char sobre la lista */
     printf("--- Test: rotar_char() ---\n");
-    printf("Rotando 1 bit a la izquierda todos los elementos de la lista...3 veces\n");
+    printf("Rotando todos los elementos de la lista...3 veces\n");
+    imprimir_lista(lista);
+    printf("Rotando 1 bit a la izquierda\n");
     lista = rotar_char(lista, 1);
     imprimir_lista(lista);
-    lista = rotar_char(lista, 1);
+    printf("Rotando 5 bit a la derecha\n");
+    lista = rotar_char(lista, -5);
     imprimir_lista(lista);
-    lista = rotar_char(lista, 1);
+    printf("Rotando 7 bit a la izquierda\n");
+    lista = rotar_char(lista, 7);
     imprimir_lista(lista);
     printf("\n");
 

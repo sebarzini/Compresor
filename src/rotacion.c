@@ -5,9 +5,15 @@ t_lista_ptr rotar_char(t_lista_ptr lista, int n){
     int i;
 
     if (lista != NULL) {
-        for (i = abs(n); i > 0; i--) {
-            if (n > 0) aux = aux->siguiente;
-            else aux = aux->anterior;
+        if (n == 0) return lista; // No hay rotación necesaria
+        if (n > 0) {
+            for (i = 0; i < n; i++) {
+                aux = aux->siguiente;
+            }
+        } else {
+            for (i = n; i > 0; i--) {
+                aux = aux->anterior;
+            }
         }
     }
     return aux;

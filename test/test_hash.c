@@ -1,28 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-typedef unsigned char byte;
-
-/* ============================================================================
- * DECLARACIONES EXTERNAS (Asegúrate de que coincidan con tu hash.c)
- * ============================================================================ */
-extern byte* hash_pass(char* pass);
-/* Asumimos que tienes expuesta o implementada esta función para calcular 
-   el largo del buffer que devuelve hash_pass */
-extern size_t get_primoA(size_t len_pass); 
+#include "crypto.h"
 
 /* ============================================================================
  * FUNCIONES AUXILIARES
  * ============================================================================ */
-void imprimir_hex(const char* etiqueta, const byte* buffer, size_t len) {
+void imprimir_hex(const char* etiqueta, const byte* buffer, size_t len, int ptrint_limit) {
     printf("%-22s (%zu bytes): ", etiqueta, len);
-    /* Imprime un máximo de 16 bytes para no inundar la consola si el primo es grande */
-    size_t limit = (len > 16) ? 16 : len; 
+    /* Imprime un máximo de ptrint_limit bytes para no inundar la consola si el primo es grande */
+    size_t limit = (len > ptrint_limit) ? ptrint_limit : len; 
     for (size_t i = 0; i < limit; i++) {
         printf("%02X ", buffer[i]);
     }
-    if (len > 16) printf("... ");
+    if (len > ptrint_limit) printf("... ");
     printf("\n");
 }
 
@@ -39,24 +27,28 @@ void test_determinismo(char* pass) {
     
     byte* h1 = hash_pass(pass);
     byte* h2 = hash_pass(pass);
+    byte* h3 = hash_pass(pass);
 
-    if (!h1 || !h2) {
+    if (!h1 || !h2 || !h3) {
         printf("  [FALLO] La función devolvió NULL.\n\n");
         return;
     }
 
     /* Comparamos todo el bloque de memoria devuelto */
-    if (memcmp(h1, h2, expected_len) == 0) {
+    if (memcmp(h1, h2, expected_len) == 0 && memcmp(h2, h3, expected_len) == 0) {
         printf("  [EXITO] La misma entrada genera la misma salida (%zu bytes).\n", expected_len);
     } else {
         printf("  [FALLO] Las salidas son diferentes para la misma entrada.\n");
     }
     
-    imprimir_hex("  Salida", h1, expected_len);
+    imprimir_hex("  Salida 1:", h1, expected_len, 32);
+    imprimir_hex("  Salida 2:", h2, expected_len, 32);
+    imprimir_hex("  Salida 3:", h3, expected_len, 32);
     printf("\n");
     
-    /* Si tu función hash_pass utiliza malloc(), debes liberar la memoria: */
-    free(h1); free(h2);
+    free(h1);
+    free(h2);
+    free(h3);
 }
 
 /* PRUEBA 2: Validación de Longitud Variable */
@@ -85,9 +77,12 @@ void test_longitud_variable(char* pass1, char* pass2) {
     } else {
         printf("  [ADVERTENCIA] Ambas claves generaron la misma longitud de salida.\n");
     }
+    imprimir_hex("  Salida 1:", h1, expected_out1, 32);
+    imprimir_hex("  Salida 2:", h2, expected_out2, 32);
     printf("\n");
     
-    free(h1); free(h2);
+    free(h1);
+    free(h2);
 }
 
 /* PRUEBA 3: Efecto Avalancha en Misma Longitud (Cambiar 1 bit) */
@@ -114,9 +109,105 @@ void test_avalancha(char* pass1, char* pass2) {
     } else {
         printf("  [FALLO] La salida es idéntica a pesar de cambiar la clave.\n");
     }
-    printf("\n");
     
-    free(h1); free(h2); 
+    imprimir_hex("  Salida 1:", h1, expected_out, 32);
+    imprimir_hex("  Salida 2:", h2, expected_out, 32);
+    printf("\n");
+   free(h1);
+   free(h2); 
+}
+
+void test_aleatorio() {
+    printf("[TEST 4] Generación de Hash Aleatorio\n");
+    byte* random_hash1 = random_bytes(16);
+    byte* random_hash2 = random_bytes(16);
+    byte* random_hash3 = random_bytes(16);
+
+    byte* random_hash4 = random_bytes(32);
+    byte* random_hash5 = random_bytes(32);
+    byte* random_hash6 = random_bytes(32);
+
+    imprimir_hex("  Hash Aleatorio:", random_hash1, 16, 32);
+    imprimir_hex("  Hash Aleatorio:", random_hash2, 16, 32);
+    imprimir_hex("  Hash Aleatorio:", random_hash3, 16, 32);
+    printf("\n");
+    printf("\n");
+    imprimir_hex("  Hash Aleatorio:", random_hash4, 32, 32);
+    imprimir_hex("  Hash Aleatorio:", random_hash5, 32, 32);
+    imprimir_hex("  Hash Aleatorio:", random_hash6, 32, 32);
+    printf("\n");
+
+    free(random_hash1);
+    free(random_hash2);
+    free(random_hash3);
+    free(random_hash4);
+    free(random_hash5);
+    free(random_hash6);
+}
+
+void test_pass_check(char* pass) {
+    printf("[TEST 5] Verificación de Contraseña\n");
+    byte* hash = hash_pass(pass);
+    
+    boolean resultado = pass_check(pass, hash);
+    
+    if (resultado) {
+        printf("  [EXITO] La contraseña coincide con el hash proporcionado.\n\n\n");
+    } else {
+        printf("  [FALLO] La contraseña NO coincide con el hash proporcionado.\n\n\n");
+    }
+    free(hash);
+}
+
+void test_pass_check_invalid(char* pass, char* wrong_pass) {
+    printf("[TEST 6] Verificación de Contraseña Incorrecta\n");
+    byte* hash = hash_pass(pass);
+    
+    boolean resultado = pass_check(wrong_pass, hash);
+    
+    if (!resultado) {
+        printf("  [EXITO] La contraseña incorrecta NO coincide con el hash proporcionado.\n\n\n");
+    } else {
+        printf("  [FALLO] La contraseña incorrecta coincide con el hash proporcionado.\n\n\n");
+    }
+    free(hash);
+}
+
+void test_encode_decode(char* pass) {
+    printf("[TEST 8] Codificación y Decodificación\n");
+    
+    size_t len = strlen(pass);
+    size_t hash_len = get_primoB(len);
+    char MSG[] = "HOLA soy Sebastian Barzini";
+    
+    t_lista_ptr listaPass = getListaPass(pass);
+    t_lista_ptr listaHash = getListaHash(hash_len);
+    t_lista_ptr listaPass2 = listaPass;
+    t_lista_ptr listaHash2 = listaHash;
+
+    printf("\n\n");
+    printf("Mensaje original: %s\n", MSG);
+    imprimir_hex("  MSG  Original:", MSG, strlen(MSG), 32);
+    printf("\n\n");
+
+    byte* encoded = encode_n(MSG, strlen(MSG), &listaPass, &listaHash);
+    
+    byte* decoded = decode_n(encoded, strlen(MSG), &listaPass2, &listaHash2);
+
+    if (memcmp(MSG, decoded, strlen(MSG)) == 0) {
+        printf("  [EXITO] La decodificación recuperó correctamente el mensaje original.\n");
+    } else {
+        printf("  [FALLO] La decodificación NO recuperó el mensaje original.\n");
+    }
+    
+    printf("\n\n");
+    imprimir_hex("  Hash Original:", MSG, strlen(MSG), 32);
+    imprimir_hex("Mensaje codificado: ", encoded, strlen(MSG), 32);
+    imprimir_hex("  Hash Decodificado:", decoded, strlen(MSG), 32);
+    
+    printf("\n\n");
+    free(encoded);
+    free(decoded);
 }
 
 int main() {
@@ -136,5 +227,14 @@ int main() {
     
     test_avalancha(clave_larga, clave_casi_igual);
 
+    test_aleatorio();
+
+    test_pass_check(clave_larga);
+ 
+    test_pass_check(clave_casi_igual);
+ 
+    test_pass_check_invalid(clave_larga, clave_casi_igual);
+ 
+    test_encode_decode(clave_larga);
     return 0;
 }
