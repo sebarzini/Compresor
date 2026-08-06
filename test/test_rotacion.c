@@ -52,6 +52,12 @@ void test_listas() {
     assert(lista->siguiente == nodo2);
     assert(nodo2->siguiente == nodo3);
     assert(nodo3->siguiente == lista);
+    printf("Prueva 2 EXITOSA\n");
+// 2.5 Verificar enlaces anteriores
+    assert(lista->anterior == nodo3);
+    assert(nodo3->anterior == nodo2);
+    assert(nodo2->anterior == lista);
+    printf("Prueva 2.5 EXITOSA\n");
     
     // 3. Testear rotar_char (movimiento por la lista)
     // Rotar 1 posición adelante (n > 0)
@@ -62,6 +68,10 @@ void test_listas() {
     assert(rotar_char(lista, 2) == nodo3);
     
     // Rotar 1 posición hacia atrás (n < 0)
+    printf("Dato anterior a rotar_char(lista, -1): %d\n", lista->dato);
+    t_lista_ptr aux = lista->anterior;
+    assert(aux == nodo3);
+    printf("Dato anterior a rotar_char(lista, -1): %d\n", aux->dato);
     t_lista_ptr rotado_izq = rotar_char(lista, -1);
     assert(rotado_izq == nodo3);
     

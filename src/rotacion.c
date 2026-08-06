@@ -11,7 +11,7 @@ t_lista_ptr rotar_char(t_lista_ptr lista, int n){
                 aux = aux->siguiente;
             }
         } else {
-            for (i = n; i > 0; i--) {
+            for (i = 0; i < abs(n); i++) {
                 aux = aux->anterior;
             }
         }

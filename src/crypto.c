@@ -58,14 +58,14 @@ byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
     byte ret = 0;
     
     // rotar lista de pass
-    *listaPass = rotar_char(*listaPass, -(dato%13));
+    *listaPass = rotar_char(*listaPass, -(dato%11));
     // rotar lista de Hash
     //    *listaHash = rotar_char(*listaHash, dato%3);
     // XOR con las cabeceras.
     byte a = (*listaPass)->dato;
     byte b = (*listaHash)->dato;
     ret = dato ^ a ^ b;
-    printf("<< Rotando lista de pass %d posiciones [%i](%i - %i).\n", -(dato%13), ret, a, b);
+    printf("<< Rotando lista de pass %d posiciones [%i](%i - %i).\n", -(dato%11), ret, a, b);
     return ret;
 }
 
