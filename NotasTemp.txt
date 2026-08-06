@@ -1,0 +1,9 @@
+Cuando encripto, voy rotando las listas, y cuando las ovy a desencriptar las roto igualmente,
+Lo que tengo que hacer es distinguir cuando encripto y cuando desencripto para rotar las listas
+en sentido contrario.
+
+Mejorar y unificar las pruevas de rotacion.
+
+arreglar el tema de la compilacion bajo windows.
+
+HAcer el git publico
