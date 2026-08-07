@@ -3,7 +3,19 @@
 /* ============================================================================
  * FUNCIONES AUXILIARES
  * ============================================================================ */
-void imprimir_hex(const char* etiqueta, const byte* buffer, size_t len, int ptrint_limit) {
+
+void imprimir_lista(const char* etiqueta, t_lista_ptr lista, size_t limit) {
+    size_t count = 0;
+    printf("%-22s: ", etiqueta);
+    while (lista != NULL && count < limit) {
+        printf("- %02X ", (void*)lista->dato);
+        lista = lista->siguiente;
+        count++;
+    }
+    printf("\n");
+}
+
+void imprimir_hex(const char* etiqueta, const byte* buffer, size_t len, size_t ptrint_limit) {
     printf("%-22s (%zu bytes): ", etiqueta, len);
     /* Imprime un máximo de ptrint_limit bytes para no inundar la consola si el primo es grande */
     size_t limit = (len > ptrint_limit) ? ptrint_limit : len; 
@@ -187,10 +199,14 @@ void test_encode_decode(char* pass) {
 
     printf("\n\n");
     printf("Mensaje original: %s\n", MSG);
-    imprimir_hex("  MSG  Original:", MSG, strlen(MSG), 32);
+    imprimir_hex("  MSG  Original:", (byte*)MSG, strlen(MSG), 32);
     printf("\n\n");
 
-    byte* encoded = encode_n(MSG, strlen(MSG), &listaPass, &listaHash);
+    imprimir_lista("lista pasada:", listaPass, 16);
+
+    byte* encoded = encode_n((byte*)MSG, strlen(MSG), &listaPass, &listaHash);
+
+    imprimir_lista("lista pass 2:", listaPass2, 16);
     
     byte* decoded = decode_n(encoded, strlen(MSG), &listaPass2, &listaHash2);
 
@@ -201,7 +217,7 @@ void test_encode_decode(char* pass) {
     }
     
     printf("\n\n");
-    imprimir_hex("  Hash Original:", MSG, strlen(MSG), 32);
+    imprimir_hex("  Hash Original:", (byte*)MSG, strlen(MSG), 32);
     imprimir_hex("Mensaje codificado: ", encoded, strlen(MSG), 32);
     imprimir_hex("  Hash Decodificado:", decoded, strlen(MSG), 32);
     

@@ -2,8 +2,8 @@
 #define M_SO
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h> // Para system()
+#include "tipos_gen.h"
 
 // ============================================================================
 //   CONSTANTES MULTIPLATAFORMA (Iguales en Windows y Linux)
@@ -49,7 +49,7 @@
 // Objetivo: Crear un directorio (carpeta) adaptándose al SO
 // Entrada: Ruta de la carpeta a crear
 // Salida: true si se creó con éxito, false en caso de error
-inline bool crear_directorio(const char *ruta) {
+inline boolean crear_directorio(const char *ruta) {
 #if defined(_WIN32) || defined(_WIN64)
     return _mkdir(ruta) == 0;
 #elif defined(__linux__) || defined(__APPLE__)
