@@ -2,16 +2,16 @@
 
 t_lista_ptr rotar_char(t_lista_ptr lista, int n){
     t_lista_ptr aux = lista;
-    int i;
+    int max = (n>0) ? n : -n;
 
     if (lista != NULL) {
         if (n == 0) return lista; // No hay rotación necesaria
         if (n > 0) {
-            for (i = 0; i < n; i++) {
+            for (int i = 0; i < max; i++) {
                 aux = aux->siguiente;
             }
         } else {
-            for (i = 0; i < abs(n); i++) {
+            for (int i = 0; i < max; i++) {
                 aux = aux->anterior;
             }
         }
@@ -26,7 +26,7 @@ byte rotar(byte b, int n){
     if (n > 0){
         ret = (b << rotar) | (b >> (8 - rotar));
     } else {
-        ret = (b >> (-n % 8)) | (b << (8 - (-n % 8)));
+        ret = (b >> rotar) | (b << (8 - rotar));
     }
     return ret;
 }
@@ -34,6 +34,7 @@ byte rotar(byte b, int n){
 t_lista_ptr crear_nodo(t_lista_ptr lista, byte dato){
     t_lista_ptr nuevo_nodo = (t_lista_ptr)malloc(sizeof(struct t_lista));
     if (nuevo_nodo != NULL) {
+        memset(nuevo_nodo, 0, sizeof(struct t_lista)); // Inicializa la memoria a cero
         // Inicializar el nuevo nodo
         nuevo_nodo->dato = dato;
         if (lista == NULL) {
@@ -94,12 +95,17 @@ void vaciar_lista(t_lista_ptr lista){
 }
 
 byte cabecera_lista(t_lista_ptr lista){
-    if (lista != NULL) return lista->dato;
+    if (lista != NULL){
+        return lista->dato;
+    }
     return 0; // Valor predeterminado si la lista está vacía
 }
 
 byte cola_lista(t_lista_ptr lista){
     t_lista_ptr aux = lista;
-    if (aux != NULL) return aux->dato;
+    if (aux != NULL){
+        t_lista_ptr ultimo = aux->anterior;
+        return ultimo->dato;
+    }
     return 0; // Valor predeterminado si la lista está vacía
 }

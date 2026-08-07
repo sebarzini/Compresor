@@ -190,7 +190,7 @@ void test_encode_decode(char* pass) {
     
     size_t len = strlen(pass);
     size_t hash_len = get_primoB(len);
-    char MSG[] = "HOLA soy Sebastian Barzini";
+    char MSG[] = "abcdefghi";
     
     t_lista_ptr listaPass = getListaPass(pass);
     t_lista_ptr listaHash = getListaHash(hash_len);
@@ -251,6 +251,6 @@ int main() {
  
     test_pass_check_invalid(clave_larga, clave_casi_igual);
  
-    test_encode_decode(clave_larga);
+    test_encode_decode(clave_corta);
     return 0;
 }
