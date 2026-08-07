@@ -6,4 +6,6 @@ Mejorar y unificar las pruevas de rotacion.
 
 arreglar el tema de la compilacion bajo windows.
 
+Corregir, completar el readme.md
+
 HAcer el git publico

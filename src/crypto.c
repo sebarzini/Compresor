@@ -1,8 +1,9 @@
 #include "crypto.h"
-
+/*
 boolean pass_check(char* pass, byte* hash){
-    size_t len_pass = strlen(pass);
-    size_t len_hash = get_primoA(len_pass);
+    unsigned int len_pass = strlen(pass);
+    unsigned int len_hash = get_primoA(len_pass);
+    boolean resultado = FALSE;
 
     byte* hash_calculado = hash_pass(pass);
     if (hash_calculado == NULL) {
@@ -10,11 +11,11 @@ boolean pass_check(char* pass, byte* hash){
         return 0; // Retorna falso si hay un error
     }
 
-    boolean resultado = (memcmp(hash_calculado, hash, len_hash) == 0);
+    resultado = (memcmp(hash_calculado, hash, len_hash) == 0);
     free(hash_calculado);
     return resultado;
 }
-
+*/
 t_lista_ptr getListaPass(char* pass){
     t_lista_ptr ret = NULL;
     byte* campo = hash_pass(pass);
@@ -42,30 +43,33 @@ byte encode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
     byte ret = 0;
     byte b = (*listaHash)->dato;
     byte a = (*listaPass)->dato;
-
+    
     // XOR con las cabeceras.
     ret = dato ^ a ^ b;
+    int rotacionA = ret%11;
 
     // rotar lista de pass
-    *listaPass = rotar_char(*listaPass, ret%11);
-printf(">> Rotando lista de pass %d posiciones [%i](%i - %i).\n", ret%11, dato, a, b);
+//    *listaPass = rotar_char(*listaPass, rotacionA);
+printf(">> Rotando lista de pass %d posiciones [%i](%i - %i).\n", rotacionA, dato, a, b);
     // rotar lista de Hash
- //   *listaHash = rotar_char(*listaHash, -ret%5);
+    *listaHash = rotar_char(*listaHash, -ret%5);
     return ret;
 }
 
 byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
     byte ret = 0;
+    int rotacionA = -(dato%11);
     
     // rotar lista de pass
-    *listaPass = rotar_char(*listaPass, -(dato%11));
+    //*listaPass = rotar_char(*listaPass, rotacionA);
     // rotar lista de Hash
-    //    *listaHash = rotar_char(*listaHash, dato%3);
+    *listaHash = rotar_char(*listaHash, dato%5);
     // XOR con las cabeceras.
     byte a = (*listaPass)->dato;
     byte b = (*listaHash)->dato;
     ret = dato ^ a ^ b;
-    printf("<< Rotando lista de pass %d posiciones [%i](%i - %i).\n", -(dato%11), ret, a, b);
+   
+    printf("<< Rotando lista de pass %d posiciones [%i](%i - %i).\n", rotacionA, ret, a, b);
     return ret;
 }
 
