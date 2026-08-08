@@ -53,9 +53,9 @@ void test_determinismo(char* pass) {
         printf("  [FALLO] Las salidas son diferentes para la misma entrada.\n");
     }
     
-    imprimir_hex("  Salida 1:", h1, expected_len, 32);
-    imprimir_hex("  Salida 2:", h2, expected_len, 32);
-    imprimir_hex("  Salida 3:", h3, expected_len, 32);
+    imprimir_hex("  Salida 1:", h1, expected_len, 20);
+    imprimir_hex("  Salida 2:", h2, expected_len, 20);
+    imprimir_hex("  Salida 3:", h3, expected_len, 20);
     printf("\n");
     
     free(h1);
@@ -89,8 +89,8 @@ void test_longitud_variable(char* pass1, char* pass2) {
     } else {
         printf("  [ADVERTENCIA] Ambas claves generaron la misma longitud de salida.\n");
     }
-    imprimir_hex("  Salida 1:", h1, expected_out1, 32);
-    imprimir_hex("  Salida 2:", h2, expected_out2, 32);
+    imprimir_hex("  Salida 1:", h1, expected_out1, 20);
+    imprimir_hex("  Salida 2:", h2, expected_out2, 20);
     printf("\n");
     
     free(h1);
@@ -122,8 +122,8 @@ void test_avalancha(char* pass1, char* pass2) {
         printf("  [FALLO] La salida es idéntica a pesar de cambiar la clave.\n");
     }
     
-    imprimir_hex("  Salida 1:", h1, expected_out, 32);
-    imprimir_hex("  Salida 2:", h2, expected_out, 32);
+    imprimir_hex("  Salida 1:", h1, expected_out, 20);
+    imprimir_hex("  Salida 2:", h2, expected_out, 20);
     printf("\n");
    free(h1);
    free(h2); 
@@ -139,14 +139,14 @@ void test_aleatorio() {
     byte* random_hash5 = random_bytes(32);
     byte* random_hash6 = random_bytes(32);
 
-    imprimir_hex("  Hash Aleatorio:", random_hash1, 16, 32);
-    imprimir_hex("  Hash Aleatorio:", random_hash2, 16, 32);
-    imprimir_hex("  Hash Aleatorio:", random_hash3, 16, 32);
+    imprimir_hex("  Hash Aleatorio:", random_hash1, 16, 20);
+    imprimir_hex("  Hash Aleatorio:", random_hash2, 16, 20);
+    imprimir_hex("  Hash Aleatorio:", random_hash3, 16, 20);
     printf("\n");
     printf("\n");
-    imprimir_hex("  Hash Aleatorio:", random_hash4, 32, 32);
-    imprimir_hex("  Hash Aleatorio:", random_hash5, 32, 32);
-    imprimir_hex("  Hash Aleatorio:", random_hash6, 32, 32);
+    imprimir_hex("  Hash Aleatorio:", random_hash4, 32, 20);
+    imprimir_hex("  Hash Aleatorio:", random_hash5, 32, 20);
+    imprimir_hex("  Hash Aleatorio:", random_hash6, 32, 20);
     printf("\n");
 
     free(random_hash1);
@@ -171,7 +171,7 @@ void test_encode_decode(char* pass) {
 
     printf("\n\n");
     printf("Mensaje original: %s\n", MSG);
-    imprimir_hex("  MSG  Original:", (byte*)MSG, strlen(MSG), 32);
+    imprimir_hex("  MSG  Original:", (byte*)MSG, strlen(MSG), 20);
     printf("\n\n");
 
     imprimir_lista("lista pasada:", listaPass, 16);
@@ -189,9 +189,9 @@ void test_encode_decode(char* pass) {
     }
     
     printf("\n\n");
-    imprimir_hex("  Hash Original:", (byte*)MSG, strlen(MSG), 32);
-    imprimir_hex("Mensaje codificado: ", encoded, strlen(MSG), 32);
-    imprimir_hex("  Hash Decodificado:", decoded, strlen(MSG), 32);
+    imprimir_hex("  Hash Original:", (byte*)MSG, strlen(MSG), 20);
+    imprimir_hex("Mensaje codificado: ", encoded, strlen(MSG), 20);
+    imprimir_hex("  Hash Decodificado:", decoded, strlen(MSG), 20);
     
     printf("\n\n");
     free(encoded);
@@ -217,12 +217,6 @@ int main() {
 
     test_aleatorio();
 
-//    test_pass_check(clave_larga);
- 
-  //  test_pass_check(clave_casi_igual);
- 
- //   test_pass_check_invalid(clave_larga, clave_casi_igual);
- 
-    test_encode_decode(clave_corta);
+    test_encode_decode(clave_larga);
     return 0;
 }

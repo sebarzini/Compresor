@@ -51,8 +51,6 @@ byte encode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned 
     int rotacionA = ret % get_primoA(lenPass);
     int rotacionB = ret % get_primoB(lenPass);
 
-    
-    printf ("Rotacion: %i Informacion: %02X Dato: %02X A: %02X B: %02X\n", rotacionA, ret, dato, a, b);
     // rotar listas
     *listaPass = rotar_char(*listaPass, rotacionA);
     *listaHash = rotar_char(*listaHash, rotacionB);
@@ -70,11 +68,11 @@ byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned 
     ret = dato;
     ret ^= a;
     ret ^= b;
+ 
     // rotar lista de pass
     *listaPass = rotar_char(*listaPass, rotacionA);
     *listaHash = rotar_char(*listaHash, rotacionB);
     
-    printf ("Rotacion: %i Informacion: %02X Dato: %02X A: %02X B: %02X\n", rotacionA, dato, ret, a, b);
     return ret;
 }
 
@@ -135,7 +133,7 @@ byte* hash_pass(char* pass){
     for (unsigned int indice = 0; indice < len_salida; indice++) {
         byte dato = pass[indice % len_pass]; //Obtengo el byte de la contraseña, repitiéndolo si es necesario
         rotacion_inicial ^= dato;
-        int rotacion = ((primo * dato)+ indice) % 8; // Rotación de 0 a 7 bits
+        rotacion = ((primo * dato)+ indice) % 8; // Rotación de 0 a 7 bits
         dato = rotar(dato, rotacion); // Rotar el byte antes de insertarlo en la lista
         lista = crear_nodo(lista, dato);
     }

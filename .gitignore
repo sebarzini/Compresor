@@ -55,6 +55,7 @@ dkms.conf
 *.dwo
 
 # Archivos generados por CMake
+.vccode/
 build/
 CMakeCache.txt
 CMakeFiles/
