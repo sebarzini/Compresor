@@ -39,53 +39,58 @@ t_lista_ptr getListaHash(int len){
     return ret;
 }
 
-byte encode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
+byte encode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
     byte ret = 0;
-    byte b = (*listaHash)->dato;
     byte a = (*listaPass)->dato;
+    byte b = (*listaHash)->dato;
     
     // XOR con las cabeceras.
-    ret = dato ^ a ^ b;
-    int rotacionA = ret%11;
+    ret = dato;
+    ret ^= a;
+    ret ^= b;
+    int rotacionA = ret % get_primoA(lenPass);
+    int rotacionB = ret % get_primoB(lenPass);
 
-    // rotar lista de pass
-//    *listaPass = rotar_char(*listaPass, rotacionA);
-printf(">> Rotando lista de pass %d posiciones [%i](%i - %i).\n", rotacionA, dato, a, b);
-    // rotar lista de Hash
-    *listaHash = rotar_char(*listaHash, -ret%5);
+    
+    printf ("Rotacion: %i Informacion: %02X Dato: %02X A: %02X B: %02X\n", rotacionA, ret, dato, a, b);
+    // rotar listas
+    *listaPass = rotar_char(*listaPass, rotacionA);
+    *listaHash = rotar_char(*listaHash, rotacionB);
     return ret;
 }
 
-byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
+byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
     byte ret = 0;
-    int rotacionA = -(dato%11);
+    int rotacionA = dato % get_primoA(lenPass);
+    int rotacionB = dato % get_primoB(lenPass);
     
-    // rotar lista de pass
-    //*listaPass = rotar_char(*listaPass, rotacionA);
-    // rotar lista de Hash
-    *listaHash = rotar_char(*listaHash, dato%5);
     // XOR con las cabeceras.
     byte a = (*listaPass)->dato;
     byte b = (*listaHash)->dato;
-    ret = dato ^ a ^ b;
-   
-    printf("<< Rotando lista de pass %d posiciones [%i](%i - %i).\n", rotacionA, ret, a, b);
+    ret = dato;
+    ret ^= a;
+    ret ^= b;
+    // rotar lista de pass
+    *listaPass = rotar_char(*listaPass, rotacionA);
+    *listaHash = rotar_char(*listaHash, rotacionB);
+    
+    printf ("Rotacion: %i Informacion: %02X Dato: %02X A: %02X B: %02X\n", rotacionA, dato, ret, a, b);
     return ret;
 }
 
-byte* encode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
+byte* encode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, int lenpass){
     byte* ret = (byte*)malloc(sizeof(byte) * len);
     if (ret == NULL) {
         printf("Error al asignar memoria para el buffer codificado.\n");
         return NULL;
     }
     for (int i = 0; i < len; i++){
-        ret[i] = encode(buffer[i], listaPass, listaHash);
+        ret[i] = encode(buffer[i], listaPass, listaHash, lenpass);
     }
     return ret;
 }
 
-byte* decode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash){
+byte* decode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, int lenpass){
     byte* ret = (byte*)malloc(sizeof(byte) * len);
     if (ret == NULL) {
         printf("Error al asignar memoria para el buffer codificado.\n");
@@ -93,7 +98,7 @@ byte* decode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* lista
     }
 
     for (int i = 0; i < len; i++){
-        ret[i] = decode(buffer[i], listaPass, listaHash);
+        ret[i] = decode(buffer[i], listaPass, listaHash, lenpass);
     }
     return ret;
 }

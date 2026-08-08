@@ -176,11 +176,11 @@ void test_encode_decode(char* pass) {
 
     imprimir_lista("lista pasada:", listaPass, 16);
 
-    byte* encoded = encode_n((byte*)MSG, strlen(MSG), &listaPass, &listaHash);
+    byte* encoded = encode_n((byte*)MSG, strlen(MSG), &listaPass, &listaHash, strlen(pass));
 
     imprimir_lista("lista pass 2:", listaPass2, 16);
     
-    byte* decoded = decode_n(encoded, strlen(MSG), &listaPass2, &listaHash2);
+    byte* decoded = decode_n(encoded, strlen(MSG), &listaPass2, &listaHash2, strlen(pass));
 
     if (memcmp(MSG, decoded, strlen(MSG)) == 0) {
         printf("  [EXITO] La decodificación recuperó correctamente el mensaje original.\n");
