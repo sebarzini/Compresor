@@ -1,44 +1,31 @@
 cmake_minimum_required(VERSION 3.15)
-
-# 1. CORRECCIÓN: El nombre del proyecto no debe contener espacios.
 project(Compilador_C C)
 
-# Forzar el modo Debug si el usuario no especificó uno
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Elige el tipo de construccion" FORCE)
 endif()
 
-# Estándar de C
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF) # Fuerza ANSI C estricto, sin extensiones GNU/MSVC
+set(CMAKE_C_EXTENSIONS OFF)
 
-# 2. BANDERAS DE COMPILACIÓN (Para GDB y Valgrind)
-# Dependiendo del compilador (Linux/MinGW vs Visual Studio) seteamos las banderas de depuración.
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-    # -g: Símbolos para GDB y Valgrind.
-    # -O0: Sin optimizaciones (ideal para rastrear líneas exactas de memoria perdida).
-    # -Wall -Wextra: Advertencias para código limpio.
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall -Wextra")
 elseif(MSVC)
-    # Equivalentes para Windows con compilador de Visual Studio (MSVC)
-    # /Zi: Símbolos de depuración. /Od: Sin optimización.
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Zi /Od /W4")
 endif()
 
-# Buscar TODOS los archivos fuente de la lógica interna en 'src'
-file(GLOB COMPILER_SOURCES "src/*.c")
-# Excluyendo main.c[cite: 1]
+# Obtener los fuentes de la lógica con rutas absolutas
+file(GLOB COMPILER_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
 list(REMOVE_ITEM COMPILER_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
-# NOTA: En tu original tenías src/rotacion.c listado de nuevo, el GLOB ya lo atrapa.
 
-# Ejecutable principal del compilador[cite: 1]
-add_executable(mi_compilador src/main.c ${COMPILER_SOURCES})
+# Crear una librería estática interna con el código de 'src'
+add_library(compilador_lib STATIC ${COMPILER_SOURCES})
+target_include_directories(compilador_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# 3. MODERN CMAKE: Hacer que la carpeta 'include' sea visible
-# Usamos target_include_directories en lugar del obsoleto include_directories[cite: 1]
-target_include_directories(mi_compilador PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# Ejecutable principal del proyecto
+add_executable(mi_compilador src/main.c)
+target_link_libraries(mi_compilador PRIVATE compilador_lib)
 
-# Incluir la carpeta de pruebas al proceso de compilación[cite: 1]
-# ATENCIÓN: Asegúrate de tener un archivo CMakeLists.txt dentro de la carpeta 'test'
+# Incluir subdirectorio de pruebas
 add_subdirectory(test)

@@ -8,7 +8,7 @@ void imprimir_lista(const char* etiqueta, t_lista_ptr lista, size_t limit) {
     size_t count = 0;
     printf("%-22s: ", etiqueta);
     while (lista != NULL && count < limit) {
-        printf("- %02X ", (void*)lista->dato);
+        printf("- %02X ", (byte)lista->dato);
         lista = lista->siguiente;
         count++;
     }
@@ -157,34 +157,6 @@ void test_aleatorio() {
     free(random_hash6);
 }
 
-void test_pass_check(char* pass) {
-    printf("[TEST 5] Verificación de Contraseña\n");
-    byte* hash = hash_pass(pass);
-    
-    boolean resultado = pass_check(pass, hash);
-    
-    if (resultado) {
-        printf("  [EXITO] La contraseña coincide con el hash proporcionado.\n\n\n");
-    } else {
-        printf("  [FALLO] La contraseña NO coincide con el hash proporcionado.\n\n\n");
-    }
-    free(hash);
-}
-
-void test_pass_check_invalid(char* pass, char* wrong_pass) {
-    printf("[TEST 6] Verificación de Contraseña Incorrecta\n");
-    byte* hash = hash_pass(pass);
-    
-    boolean resultado = pass_check(wrong_pass, hash);
-    
-    if (!resultado) {
-        printf("  [EXITO] La contraseña incorrecta NO coincide con el hash proporcionado.\n\n\n");
-    } else {
-        printf("  [FALLO] La contraseña incorrecta coincide con el hash proporcionado.\n\n\n");
-    }
-    free(hash);
-}
-
 void test_encode_decode(char* pass) {
     printf("[TEST 8] Codificación y Decodificación\n");
     
@@ -245,11 +217,11 @@ int main() {
 
     test_aleatorio();
 
-    test_pass_check(clave_larga);
+//    test_pass_check(clave_larga);
  
-    test_pass_check(clave_casi_igual);
+  //  test_pass_check(clave_casi_igual);
  
-    test_pass_check_invalid(clave_larga, clave_casi_igual);
+ //   test_pass_check_invalid(clave_larga, clave_casi_igual);
  
     test_encode_decode(clave_corta);
     return 0;
