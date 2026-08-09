@@ -8,8 +8,8 @@
 #include <string.h>
 #include <time.h>
 
-typedef uint8_t byte;
-typedef int8_t boolean;
+typedef unsigned char byte;
+typedef unsigned char byte;
 #define FALSE 0
 #define TRUE 1
 #endif // TIPOS_GEN_H

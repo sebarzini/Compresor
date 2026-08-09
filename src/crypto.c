@@ -1,21 +1,5 @@
 #include "crypto.h"
-/*
-boolean pass_check(char* pass, byte* hash){
-    unsigned int len_pass = strlen(pass);
-    unsigned int len_hash = get_primoA(len_pass);
-    boolean resultado = FALSE;
 
-    byte* hash_calculado = hash_pass(pass);
-    if (hash_calculado == NULL) {
-        printf("Error al calcular el hash de la contraseña.\n");
-        return 0; // Retorna falso si hay un error
-    }
-
-    resultado = (memcmp(hash_calculado, hash, len_hash) == 0);
-    free(hash_calculado);
-    return resultado;
-}
-*/
 t_lista_ptr getListaPass(char* pass){
     t_lista_ptr ret = NULL;
     byte* campo = hash_pass(pass);
@@ -40,6 +24,7 @@ t_lista_ptr getListaHash(int len){
 }
 
 byte encode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
+
     byte ret = 0;
     byte a = (*listaPass)->dato;
     byte b = (*listaHash)->dato;
@@ -76,19 +61,19 @@ byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned 
     return ret;
 }
 
-byte* encode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, int lenpass){
+byte* encode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
     byte* ret = (byte*)malloc(sizeof(byte) * len);
     if (ret == NULL) {
         printf("Error al asignar memoria para el buffer codificado.\n");
         return NULL;
     }
     for (int i = 0; i < len; i++){
-        ret[i] = encode(buffer[i], listaPass, listaHash, lenpass);
+        ret[i] = encode(buffer[i], listaPass, listaHash, lenPass);
     }
     return ret;
 }
 
-byte* decode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, int lenpass){
+byte* decode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenpass){
     byte* ret = (byte*)malloc(sizeof(byte) * len);
     if (ret == NULL) {
         printf("Error al asignar memoria para el buffer codificado.\n");

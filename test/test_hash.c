@@ -158,29 +158,26 @@ void test_aleatorio() {
 }
 
 void test_encode_decode(char* pass) {
-    printf("[TEST 8] Codificación y Decodificación\n");
+    printf("[TEST 5] Codificación y Decodificación\n");
     
     size_t len = strlen(pass);
     size_t hash_len = get_primoB(len);
-    char MSG[] = "abcdefghi";
+    char MSG[] = "Aplicacion";
     
     t_lista_ptr listaPass = getListaPass(pass);
     t_lista_ptr listaHash = getListaHash(hash_len);
-    t_lista_ptr listaPass2 = listaPass;
+    t_lista_ptr listaPass2 = getListaPass(pass);
     t_lista_ptr listaHash2 = listaHash;
 
     printf("\n\n");
     printf("Mensaje original: %s\n", MSG);
     imprimir_hex("  MSG  Original:", (byte*)MSG, strlen(MSG), 20);
-    printf("\n\n");
-
-    imprimir_lista("lista pasada:", listaPass, 16);
 
     byte* encoded = encode_n((byte*)MSG, strlen(MSG), &listaPass, &listaHash, strlen(pass));
-
-    imprimir_lista("lista pass 2:", listaPass2, 16);
+    imprimir_hex("Mensaje codificado: ", encoded, strlen(MSG), 20);
     
     byte* decoded = decode_n(encoded, strlen(MSG), &listaPass2, &listaHash2, strlen(pass));
+    imprimir_hex("  Hash Decodificado:", decoded, strlen(MSG), 20);
 
     if (memcmp(MSG, decoded, strlen(MSG)) == 0) {
         printf("  [EXITO] La decodificación recuperó correctamente el mensaje original.\n");
@@ -189,18 +186,17 @@ void test_encode_decode(char* pass) {
     }
     
     printf("\n\n");
-    imprimir_hex("  Hash Original:", (byte*)MSG, strlen(MSG), 20);
-    imprimir_hex("Mensaje codificado: ", encoded, strlen(MSG), 20);
-    imprimir_hex("  Hash Decodificado:", decoded, strlen(MSG), 20);
+    vaciar_lista(listaPass);
+    vaciar_lista(listaPass2);
+    vaciar_lista(listaHash);
     
-    printf("\n\n");
     free(encoded);
     free(decoded);
 }
 
 int main() {
     printf("================================================================\n");
-    printf("    PRUEBAS DE HASH (LONGITUD DE SALIDA VARIABLE)\n");
+    printf("    PRUEBAS DE CRYPTO (LONGITUD DE SALIDA FIJA)\n");
     printf("================================================================\n\n");
 
     /* Casos de prueba */

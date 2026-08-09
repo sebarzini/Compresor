@@ -1,1 +1,0 @@
-drmemory -- build\compresor.exe

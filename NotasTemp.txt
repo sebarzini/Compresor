@@ -1,4 +1,3 @@
-Mejorar y unificar las pruevas de rotacion.
 Corregir, completar el readme.md
 
 HAcer el git publico

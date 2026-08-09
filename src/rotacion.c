@@ -21,12 +21,12 @@ t_lista_ptr rotar_char(t_lista_ptr lista, int n){
 
 
 byte rotar(byte b, int n){
-    byte rotar = n % 8;
+    byte rotar = abs(n % 8);
     byte ret = b;
     if (n > 0){
-        ret = (b << rotar) | (b >> (8 - rotar));
+        ret = (byte)(b << rotar) | (b >> (8 - rotar));
     } else {
-        ret = (b >> rotar) | (b << (8 - rotar));
+        ret = (byte)(b >> rotar) | (b << (8 - rotar));
     }
     return ret;
 }
