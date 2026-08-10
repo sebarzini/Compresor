@@ -9,7 +9,7 @@
 #include <time.h>
 
 typedef unsigned char byte;
-typedef unsigned char byte;
+typedef unsigned boolean;
 #define FALSE 0
 #define TRUE 1
 #endif // TIPOS_GEN_H

@@ -13,12 +13,20 @@
 #define FOPEN_WRITE_BIN "wb"
 #define FOPEN_APPEND_BIN "ab"
 
+#include <sys/stat.h>
 // ============================================================================
 //   DETECCIÓN Y CONFIGURACIÓN ESPECÍFICA DE CADA S.O.
 // ============================================================================
 #if defined(_WIN32) || defined(_WIN64)
-    #include <direct.h> // Para _mkdir en Windows
+#include <direct.h> // Para _mkdir en Windows
 
+    #ifndef S_ISDIR
+    #define S_ISDIR(mode) (((mode) & _S_IFDIR) == _S_IFDIR)
+    #endif
+    #ifndef S_ISREG
+    #define S_ISREG(mode) (((mode) & _S_IFREG) == _S_IFREG)
+    #endif
+    
     #define PATH_SEP '\\'
     #define PATH_SEP_STR "\\"
     #define OS_NAME "Windows"
@@ -26,7 +34,13 @@
     #define LIMPIAR_PANTALLA() system("cls")
 
 #elif defined(__linux__) || defined(__APPLE__)
-    #include <sys/stat.h> // Para mkdir en Linux/Unix
+
+    #ifndef S_ISDIR
+        #define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
+    #endif
+    #ifndef S_ISREG
+        #define S_ISREG(mode) (((mode) & S_IFMT) == S_IFREG)
+    #endif
 
     #define PATH_SEP '/'
     #define PATH_SEP_STR "/"

@@ -18,11 +18,9 @@ Este proyecto es un compresor/encriptador de alto rendimiento desarrollado puram
 El proyecto utiliza CMake para facilitar la compilación en cualquier sistema operativo.
 
 ### En Linux (usando CMake)
-'''bash
     ./compilar.sh
 
 ### En Windows (usando CMake)
-'''bash
     -compi.bat
 
 🧪 Pruebas
