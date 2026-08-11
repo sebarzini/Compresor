@@ -1,5 +1,5 @@
-#ifndef M_DEBUG
-#define M_DEBUG
+#ifndef MTH_DEBUG
+#define MTH_DEBUG
 
 #include <stdio.h>
 
@@ -41,4 +41,4 @@
 
 #endif
 
-#endif
+#endif // MTH_DEBUG

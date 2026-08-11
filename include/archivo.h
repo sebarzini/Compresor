@@ -1,6 +1,6 @@
-#ifndef M_ARCHIVO
+#ifndef MTH_ARCHIVO
 
-#define M_ARCHIVO
+#define MTH_ARCHIVO
 
 #include "tipos_gen.h"
 #include "SO.h"
@@ -11,4 +11,4 @@ void escribir_file(FILE* archivo, byte* buffer, size_t len);
 byte* leer_file(FILE* archivo, size_t* bytes_read, size_t len);
 boolean existe_archivo(const char* path);
 
-#endif
+#endif // MTH_ARCHIVO

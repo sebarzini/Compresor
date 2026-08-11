@@ -1,5 +1,5 @@
-#ifndef TIPOS_GEN_H
-#define TIPOS_GEN_H
+#ifndef MTH_TIPOS_GEN
+#define MTH_TIPOS_GEN
 
 #include <stdint.h>
 #include <stddef.h>
@@ -12,4 +12,4 @@ typedef unsigned char byte;
 typedef unsigned boolean;
 #define FALSE 0
 #define TRUE 1
-#endif // TIPOS_GEN_H
+#endif // MTH_TIPOS_GEN

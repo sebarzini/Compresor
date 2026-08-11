@@ -24,8 +24,7 @@ add_library(compilador_lib STATIC ${COMPILER_SOURCES})
 target_include_directories(compilador_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Ejecutable principal del proyecto
-add_executable(mi_compilador src/main.c
-    include/archivo.h)
+add_executable(mi_compilador src/main.c)
 target_link_libraries(mi_compilador PRIVATE compilador_lib)
 
 # Incluir subdirectorio de pruebas

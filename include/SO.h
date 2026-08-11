@@ -1,5 +1,5 @@
-#ifndef M_SO
-#define M_SO
+#ifndef MTH_SO
+#define MTH_SO
 
 #include <stdio.h>
 #include <stdlib.h> // Para system()
@@ -79,4 +79,4 @@ void imprimir_configuracion_sistema(void) {
     printf("Separador de carpetas: %c\n", PATH_SEP);
 }
 
-#endif
+#endif // MTH_SO
