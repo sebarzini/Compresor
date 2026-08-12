@@ -21,7 +21,7 @@ El proyecto utiliza CMake para facilitar la compilación en cualquier sistema op
     ./compilar.sh
 
 ### En Windows (usando CMake)
-    -compi.bat
+    compi.bat
 
 🧪 Pruebas
 Los tests unitarios se encuentran en la carpeta test/. Una vez compilado el proyecto, puedes ejecutar los binarios de prueba generados en tu carpeta build/.
