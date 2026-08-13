@@ -43,7 +43,7 @@ void log_write_internal(const char *file,
     
 
     /* 1. Escritura de metadatos */
-    fprintf(log_file, "[%s %s] [%s:%d | %s()] ", date, time, nombre_archivo(file), line, func);
+    fprintf(log_file, "[%s %s] [%-12.12s: %-4.4d | %-12.12s] ", date, time, nombre_archivo(file), line, func);
 
     /* 2. Escritura de los argumentos y comentarios variables */
     va_start(args, fmt);
