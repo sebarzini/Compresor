@@ -49,7 +49,7 @@ t_lista_ptr crear_nodo(t_lista_ptr lista, byte dato){
             ant->siguiente = nuevo_nodo;
         }
     } else {
-        printf("Error al asignar memoria para el nuevo nodo.\n");
+        fprintf(stderr, "Error al asignar memoria para el nuevo nodo.\n");
     }
 
     return nuevo_nodo;
@@ -103,7 +103,7 @@ byte cabecera_lista(t_lista_ptr lista){
 
 byte cola_lista(t_lista_ptr lista){
     t_lista_ptr aux = lista;
-    if (aux != NULL){
+    if (aux != NULL && aux->anterior != NULL){
         t_lista_ptr ultimo = aux->anterior;
         return ultimo->dato;
     }

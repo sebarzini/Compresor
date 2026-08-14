@@ -7,6 +7,10 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <errno.h>
+#include <string.h>
+
+#include "tipos_gen.h"
 
 /* Compatibilidad para el nombre de función entre C89 y C99/C11 */
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
@@ -35,7 +39,8 @@ void log_write_internal(const char *file,
                                   const char *fmt,
                                   ...);
 
-void close_log();
+/* Cierra el log; devuelve FALSE si el cierre fallo (datos posiblemente perdidos) */
+boolean close_log(void);
 
 
 #endif // MTH_LOG
