@@ -28,4 +28,5 @@ add_executable(mi_compilador src/main.c)
 target_link_libraries(mi_compilador PRIVATE compilador_lib)
 
 # Incluir subdirectorio de pruebas
+enable_testing()
 add_subdirectory(test)

@@ -63,7 +63,7 @@
 // Objetivo: Crear un directorio (carpeta) adaptándose al SO
 // Entrada: Ruta de la carpeta a crear
 // Salida: true si se creó con éxito, false en caso de error
-inline boolean crear_directorio(const char *ruta) {
+static inline boolean crear_directorio(const char *ruta) {
 #if defined(_WIN32) || defined(_WIN64)
     return _mkdir(ruta) == 0;
 #elif defined(__linux__) || defined(__APPLE__)
@@ -74,7 +74,7 @@ inline boolean crear_directorio(const char *ruta) {
 }
 
 // Objetivo: Mostrar en consola la configuración de plataforma detectada
-void imprimir_configuracion_sistema(void) {
+static inline void imprimir_configuracion_sistema(void) {
     printf("Sistema Operativo: %s\n", OS_NAME);
     printf("Separador de carpetas: %c\n", PATH_SEP);
 }

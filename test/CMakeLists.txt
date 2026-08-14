@@ -12,4 +12,9 @@ foreach(TEST_FILE ${TEST_FILES})
     
     # Vincular la librería estática (aporta todas las funciones de src/ y la carpeta include/)
     target_link_libraries(${TEST_NAME} PRIVATE compilador_lib)
+
+    # Registrar la prueba en CTest para poder ejecutarlas todas con 'ctest'
+    add_test(NAME ${TEST_NAME}
+             COMMAND ${TEST_NAME}
+             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 endforeach()
