@@ -6,7 +6,9 @@
 #include "primos.h"
 
 
-#define RANDOM_INIT srand(time(NULL));
+/* Rellena out con len bytes del generador de entropia del sistema
+   (/dev/urandom o BCryptGenRandom). Devuelve FALSE si no hay entropia. */
+boolean bytes_aleatorios_seguros(byte* out, size_t len);
 
 byte* hash_pass(char* pass);
 byte* random_bytes(int n);

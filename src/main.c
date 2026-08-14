@@ -7,13 +7,19 @@ int main(int argc, char* argv[]) {
     printf("Iniciando programa\n");
     LOG("Programa iniciado");
 
-    parse(argc, argv, &cfg);
+    if (!parse(argc, argv, &cfg)) {
+        LOG("Argumentos invalidos");
+        mostrar_ayuda();
+        close_log();
+        return EXIT_FAILURE;
+    }
 
     LOG("Modo: %d", cfg.modo);
     LOG("N bits: %d", cfg.n_bits);
-    LOG("Password: %s", cfg.password);
-    LOG("File in: %s", cfg.file_in);
-    LOG("File out: %s", cfg.file_out);
+    /* La clave nunca se registra: solo se deja constancia de su presencia. */
+    LOG("Password: %s", (cfg.password != NULL) ? "[provista]" : "[ninguna]");
+    LOG("File in: %s", (cfg.file_in != NULL) ? cfg.file_in : "(ninguno)");
+    LOG("File out: %s", (cfg.file_out != NULL) ? cfg.file_out : "(ninguno)");
 
     if ((cfg.modo == MODO_NINGUNO)||(cfg.modo == MODO_AYUDA)) {     mostrar_ayuda();
     } else if (cfg.modo == MODO_ABOUT) {                            mostrar_about();

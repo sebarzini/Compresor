@@ -23,5 +23,17 @@ El proyecto utiliza CMake para facilitar la compilación en cualquier sistema op
 ### En Windows (usando CMake)
     compi.bat
 
+## 🔐 Notas de seguridad
+- La clave (`-p`) **nunca** se escribe en el log: solo se registra si fue provista o no.
+- El archivo de log se crea con permisos `0600` (solo el propietario puede leerlo).
+- El material aleatorio de cifrado proviene del generador del sistema
+  (`/dev/urandom` / `BCryptGenRandom`); si no hay entropia disponible la operacion falla.
+- Las macros de traza (`DEBUG_*`) solo se activan en builds `Debug`.
+- **Pendiente:** pasar la clave por linea de comandos la deja visible en la lista de
+  procesos (`ps`) y en el historial del shell. Conviene leerla por entrada interactiva
+  o desde una variable de entorno.
+- El esquema de cifrado propio (XOR + rotaciones) no equivale a un cifrado autenticado
+  estandar (p. ej. AES-GCM) y no deberia usarse para proteger datos sensibles.
+
 🧪 Pruebas
 Los tests unitarios se encuentran en la carpeta test/. Una vez compilado el proyecto, puedes ejecutar los binarios de prueba generados en tu carpeta build/.

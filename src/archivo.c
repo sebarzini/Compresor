@@ -24,7 +24,7 @@ FILE* abrir_archivo(const char* path, boolean escribir) {
  * @param archivo - Puntero al archivo a cerrar.
  */
 void cerrar_archivo(FILE* archivo){
-    if (archivo == NULL) {
+    if (archivo != NULL) {
         fclose(archivo);
     }
 }
@@ -78,6 +78,11 @@ byte* leer_file(FILE* archivo, size_t* bytes_read, size_t len){
     }
 
     if (to_read == 0) {
+        return NULL;
+    }
+
+    /* Un tamano tomado del archivo no debe traducirse en una reserva ilimitada */
+    if (to_read > MAX_LECTURA_BYTES) {
         return NULL;
     }
 

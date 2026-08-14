@@ -2,8 +2,12 @@
 #define MTH_SO
 
 #include <stdio.h>
-#include <stdlib.h> // Para system()
+#include <stdlib.h>
 #include "tipos_gen.h"
+
+// Limpia la pantalla con secuencias ANSI en lugar de invocar un shell
+// (system("clear"/"cls") depende del PATH y permite secuestrar el comando).
+#define LIMPIAR_PANTALLA() (printf("\033[2J\033[H"), fflush(stdout))
 
 // ============================================================================
 //   CONSTANTES MULTIPLATAFORMA (Iguales en Windows y Linux)
@@ -31,7 +35,6 @@
     #define PATH_SEP_STR "\\"
     #define OS_NAME "Windows"
     #define NEWLINE "\r\n"
-    #define LIMPIAR_PANTALLA() system("cls")
 
 #elif defined(__linux__) || defined(__APPLE__)
 
@@ -46,14 +49,12 @@
     #define PATH_SEP_STR "/"
     #define OS_NAME "Linux/Unix"
     #define NEWLINE "\n"
-    #define LIMPIAR_PANTALLA() system("clear")
 
 #else
     #define PATH_SEP '/'
     #define PATH_SEP_STR "/"
     #define OS_NAME "Desconocido"
     #define NEWLINE "\n"
-    #define LIMPIAR_PANTALLA() printf("\n--- Pantalla Limpia ---\n")
 #endif
 
 // ============================================================================
@@ -67,7 +68,7 @@ inline boolean crear_directorio(const char *ruta) {
 #if defined(_WIN32) || defined(_WIN64)
     return _mkdir(ruta) == 0;
 #elif defined(__linux__) || defined(__APPLE__)
-    return mkdir(ruta, 0777) == 0;
+    return mkdir(ruta, 0755) == 0;
 #else
     return false; 
 #endif
