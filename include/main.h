@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "debug.h"
 #include "Log.h"
 #include "SO.h"
+#include "archivo.h"
+
+#define N_BITS_MIN 1
+#define N_BITS_MAX 16
 
 typedef enum {
     MODO_NINGUNO,
@@ -59,47 +64,106 @@ void mostrar_ayuda() {
     LOG("Terminado la ayuda");
 }
 
-void parse(int argc, char* argv[], t_config* cfg){
-    LOG("Iniciando parseo de argumentos");
+/* Devuelve el valor de la opcion argv[*i] o NULL si falta el argumento */
+static const char* valor_opcion(int argc, char* argv[], int* i) {
+    if (*i + 1 >= argc) {
+        fprintf(stderr, "La opcion '%s' requiere un valor.\n", argv[*i]);
+        return NULL;
+    }
+    (*i)++;
+    return argv[*i];
+}
+
+/* Convierte cadena a entero validando que sea numerica y este en rango */
+static boolean parsear_entero(const char* texto, int min, int max, int* salida) {
+    char* fin = NULL;
+    long valor;
+
+    errno = 0;
+    valor = strtol(texto, &fin, 10);
+
+    if (errno != 0 || fin == texto || *fin != '\0' || valor < min || valor > max) {
+        fprintf(stderr, "Valor numerico invalido '%s' (esperado entre %d y %d).\n",
+                texto, min, max);
+        return FALSE;
+    }
+
+    *salida = (int)valor;
+    return TRUE;
+}
+
+/* Devuelve TRUE si los argumentos son validos; FALSE si hay que abortar */
+boolean parse(int argc, char* argv[], t_config* cfg){
     int i;
+    const char* valor = NULL;
+
+    LOG("Iniciando parseo de argumentos");
+
     for (i = 1; i < argc; i++) {
-        if (argv[i][0] == '-') {
-            switch (argv[i][1]) {
-                case 'c':
-                    cfg->modo = MODO_COMPRIMIR;
-                    break;
-                case 'd':
-                    cfg->modo = MODO_DESCOMPRIMIR;
-                    break;
-                case 'h':
-                    cfg->modo = MODO_AYUDA;
-                    break;
-                case 'a':
-                    cfg->modo = MODO_ABOUT;
-                    break;
-                case 'i':
-                    cfg->file_in = argv[++i];
-                    break;
-                case 'o':
-                    cfg->file_out = argv[++i];
-                    break;
-                case 'n':
-                    cfg->n_bits = atoi(argv[++i]);
-                    break;
-                case 'p':
-                    cfg->password = argv[++i];
-                    break;
-                default:
-                    break;
-            }
+        if (argv[i][0] != '-' || argv[i][1] == '\0' || argv[i][2] != '\0') {
+            fprintf(stderr, "Argumento no reconocido: '%s'\n", argv[i]);
+            return FALSE;
+        }
+        switch (argv[i][1]) {
+            case 'c':
+                cfg->modo = MODO_COMPRIMIR;
+                break;
+            case 'd':
+                cfg->modo = MODO_DESCOMPRIMIR;
+                break;
+            case 'h':
+                cfg->modo = MODO_AYUDA;
+                break;
+            case 'a':
+                cfg->modo = MODO_ABOUT;
+                break;
+            case 'i':
+                if ((valor = valor_opcion(argc, argv, &i)) == NULL) return FALSE;
+                cfg->file_in = valor;
+                break;
+            case 'o':
+                if ((valor = valor_opcion(argc, argv, &i)) == NULL) return FALSE;
+                cfg->file_out = valor;
+                break;
+            case 'n':
+                if ((valor = valor_opcion(argc, argv, &i)) == NULL) return FALSE;
+                if (!parsear_entero(valor, N_BITS_MIN, N_BITS_MAX, &cfg->n_bits)) return FALSE;
+                break;
+            case 'p':
+                if ((valor = valor_opcion(argc, argv, &i)) == NULL) return FALSE;
+                if (valor[0] == '\0') {
+                    fprintf(stderr, "La clave no puede ser vacia.\n");
+                    return FALSE;
+                }
+                cfg->password = valor;
+                break;
+            default:
+                fprintf(stderr, "Opcion desconocida: '%s'\n", argv[i]);
+                return FALSE;
         }
     }
+
+    if ((cfg->modo == MODO_COMPRIMIR || cfg->modo == MODO_DESCOMPRIMIR) &&
+        cfg->file_in == NULL) {
+        fprintf(stderr, "Falta el archivo de entrada (-i <archivo>).\n");
+        return FALSE;
+    }
+
     LOG("Terminado parseo de argumentos");
+    return TRUE;
 }
 
 
-void comprimir(t_config cfg){
+boolean comprimir(t_config cfg){
     LOG("Iniciando la compresion");
+
+    if (!existe_archivo(cfg.file_in)) {
+        fprintf(stderr, "El archivo de entrada '%s' no existe o no es un archivo regular.\n",
+                cfg.file_in);
+        LOG("Compresion abortada: archivo de entrada inaccesible");
+        return FALSE;
+    }
+
     printf("Comprimir: %s\n", cfg.file_in);
     /* Recorrer archivo de entrada */
     LOG("Abriendo archivo %s", cfg.file_in);
@@ -130,10 +194,19 @@ void comprimir(t_config cfg){
     /* Grabo el CRC en el archivo de salida */
     LOG("Guardo el CRC en el archivo de salida");
     LOG("Terminado la compresion");
+    return TRUE;
 }
 
-void descomprimir(t_config cfg){
+boolean descomprimir(t_config cfg){
     LOG("Iniciando la descompresion");
+
+    if (!existe_archivo(cfg.file_in)) {
+        fprintf(stderr, "El archivo de entrada '%s' no existe o no es un archivo regular.\n",
+                cfg.file_in);
+        LOG("Descompresion abortada: archivo de entrada inaccesible");
+        return FALSE;
+    }
+
     printf("Descomprimir: %s\n", cfg.file_in);
     /* Abrir archivo de entrada */
     /* Ver si ingresaron password   */
@@ -153,4 +226,5 @@ void descomprimir(t_config cfg){
     /* Limpiamos la memoria*/
     /* terminamos la aplicacion de forma segura*/
     LOG("Terminado la descompresion");
+    return TRUE;
 }

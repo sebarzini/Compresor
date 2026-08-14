@@ -1,10 +1,20 @@
 # include "Log.h"
 
 static FILE *log_file = NULL;
+static int log_deshabilitado = 0;
 
-static void abrir_log() {
+/* Abre el log una unica vez; si falla avisa por stderr y deshabilita el log
+   para no reintentar en cada mensaje. */
+static void abrir_log(void) {
+    if (log_file != NULL || log_deshabilitado) {
+        return;
+    }
+
+    log_file = fopen(MTH_LOG_PATH, "w");
     if (log_file == NULL) {
-        log_file = fopen(MTH_LOG_PATH, "w");
+        log_deshabilitado = 1;
+        fprintf(stderr, "No se pudo abrir el log '%s': %s. Log deshabilitado.\n",
+                MTH_LOG_PATH, strerror(errno));
     }
 }
 
@@ -34,6 +44,10 @@ void log_write_internal(const char *file,
                                   ...) {
     va_list args;
 
+    if (fmt == NULL) {
+        return;
+    }
+
     if (log_file == NULL) {
         abrir_log();
     }
@@ -52,12 +66,28 @@ void log_write_internal(const char *file,
 
     /* 3. Salto de línea final y cierre del descriptor */
     fprintf(log_file, "\n");
-    fflush(log_file);
-}
 
-void close_log() {
-    if (log_file != NULL) {
+    if (fflush(log_file) != 0 || ferror(log_file) != 0) {
+        fprintf(stderr, "Error al escribir en el log '%s': %s. Log deshabilitado.\n",
+                MTH_LOG_PATH, strerror(errno));
+        clearerr(log_file);
         fclose(log_file);
         log_file = NULL;
+        log_deshabilitado = 1;
     }
+}
+
+boolean close_log(void) {
+    boolean ok = TRUE;
+
+    if (log_file != NULL) {
+        if (fclose(log_file) != 0) {
+            fprintf(stderr, "Error al cerrar el log '%s': %s\n",
+                    MTH_LOG_PATH, strerror(errno));
+            ok = FALSE;
+        }
+        log_file = NULL;
+    }
+
+    return ok;
 }

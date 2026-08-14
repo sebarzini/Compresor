@@ -8,25 +8,36 @@
  * @return FILE* - Puntero al archivo abierto.
  */
 FILE* abrir_archivo(const char* path, boolean escribir) {
+    FILE* archivo = NULL;
+
     if (path == NULL) {
         return NULL;
     }
-    if (escribir) {
-        return fopen(path, "wb");
-    } else {
-        return fopen(path, "rb");
+
+    archivo = fopen(path, escribir ? FOPEN_WRITE_BIN : FOPEN_READ_BIN);
+    if (archivo == NULL) {
+        fprintf(stderr, "No se pudo abrir '%s' en modo %s: %s\n",
+                path, escribir ? "escritura" : "lectura", strerror(errno));
     }
+
+    return archivo;
 }
 
 /**
  * Cierra un archivo abierto previamente con abrir_archivo.
  *
  * @param archivo - Puntero al archivo a cerrar.
+ * @return TRUE si se cerro correctamente, FALSE si hubo error de cierre.
  */
-void cerrar_archivo(FILE* archivo){
+boolean cerrar_archivo(FILE* archivo){
     if (archivo == NULL) {
-        fclose(archivo);
+        return FALSE;
     }
+    if (fclose(archivo) != 0) {
+        fprintf(stderr, "Error al cerrar el archivo: %s\n", strerror(errno));
+        return FALSE;
+    }
+    return TRUE;
 }
 
 /**
@@ -35,14 +46,23 @@ void cerrar_archivo(FILE* archivo){
  * @param archivo - Puntero al archivo abierto para escritura.
  * @param buffer - Puntero al buffer de bytes a escribir.
  * @param len - Tamano del buffer en bytes.
+ * @return TRUE si se escribieron los len bytes, FALSE en caso de error.
  */
-void escribir_file(FILE* archivo, byte* buffer, size_t len){
-    
+boolean escribir_file(FILE* archivo, byte* buffer, size_t len){
+    size_t escritos = 0;
+
     if (archivo == NULL || buffer == NULL || len == 0) {
-        return;
-    } else {
-        fwrite(buffer, 1, len, archivo);
+        return FALSE;
     }
+
+    escritos = fwrite(buffer, 1, len, archivo);
+    if (escritos != len) {
+        fprintf(stderr, "Error de escritura: %lu de %lu bytes (%s)\n",
+                (unsigned long)escritos, (unsigned long)len, strerror(errno));
+        return FALSE;
+    }
+
+    return TRUE;
 }
 
 /**
@@ -73,7 +93,7 @@ byte* leer_file(FILE* archivo, size_t* bytes_read, size_t len){
         if (fseek(archivo, 0, SEEK_END) != 0) return NULL;
         long end_pos = ftell(archivo);
         if (end_pos < 0 || end_pos < current_pos) return NULL;
-        fseek(archivo, current_pos, SEEK_SET);
+        if (fseek(archivo, current_pos, SEEK_SET) != 0) return NULL;
         to_read = (size_t)(end_pos - current_pos);
     }
 
@@ -92,8 +112,13 @@ byte* leer_file(FILE* archivo, size_t* bytes_read, size_t len){
         *bytes_read = read_count;
     }
 
-    if (read_count == 0 && ferror(archivo) != 0) {
+    if (read_count != to_read && ferror(archivo) != 0) {
+        fprintf(stderr, "Error de lectura tras %lu bytes: %s\n",
+                (unsigned long)read_count, strerror(errno));
         free(buffer);
+        if (bytes_read != NULL) {
+            *bytes_read = 0;
+        }
         return NULL;
     }
 
