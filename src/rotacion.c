@@ -1,4 +1,5 @@
 #include "rotacion.h"
+#include "util.h"
 
 t_lista_ptr rotar_char(t_lista_ptr lista, int n){
     t_lista_ptr aux = lista;
@@ -31,8 +32,18 @@ byte rotar(byte b, int n){
     return ret;
 }
 
+void print_bin8(const char* texto, unsigned char num) {
+    int i;
+    printf("  %-22s | ", texto);
+    for (i = 7; i >= 0; i--) {
+        putchar((num & (1 << i)) ? '1' : '0');
+        if (i == 4) putchar(' ');
+    }
+    printf(" (0x%02X / %3d)\n", num, num);
+}
+
 t_lista_ptr crear_nodo(t_lista_ptr lista, byte dato){
-    t_lista_ptr nuevo_nodo = (t_lista_ptr)malloc(sizeof(struct t_lista));
+    t_lista_ptr nuevo_nodo = (t_lista_ptr)reservar_memoria(sizeof(struct t_lista), "el nuevo nodo");
     if (nuevo_nodo != NULL) {
         memset(nuevo_nodo, 0, sizeof(struct t_lista)); // Inicializa la memoria a cero
         // Inicializar el nuevo nodo
@@ -48,11 +59,25 @@ t_lista_ptr crear_nodo(t_lista_ptr lista, byte dato){
             sig->anterior = nuevo_nodo;
             ant->siguiente = nuevo_nodo;
         }
-    } else {
-        printf("Error al asignar memoria para el nuevo nodo.\n");
     }
 
     return nuevo_nodo;
+}
+
+t_lista_ptr crear_lista(void* p_arreglo, unsigned int cantidad){
+    t_lista_ptr lista = NULL;
+    byte* datos = (byte*)p_arreglo;
+    unsigned int i;
+
+    if (datos == NULL) {
+        return NULL;
+    }
+
+    for (i = 0; i < cantidad; i++) {
+        lista = crear_nodo(lista, datos[i]);
+    }
+
+    return lista;
 }
 
 t_lista_ptr liberar_nodo(t_lista_ptr nodo){
@@ -99,6 +124,25 @@ byte cabecera_lista(t_lista_ptr lista){
         return lista->dato;
     }
     return 0; // Valor predeterminado si la lista está vacía
+}
+
+void imprimir_lista(const char* etiqueta, t_lista_ptr lista, size_t limite){
+    t_lista_ptr actual = lista;
+    size_t impresos = 0;
+
+    printf("  %-22s: ", (etiqueta != NULL) ? etiqueta : "Estado Lista");
+    if (lista == NULL) {
+        printf("VACIA\n");
+        return;
+    }
+
+    do {
+        printf("[0x%02X|%3d] -> ", actual->dato, actual->dato);
+        actual = (t_lista_ptr)actual->siguiente;
+        impresos++;
+    } while (actual != lista && impresos < limite);
+
+    printf((actual == lista) ? "(inicio)\n" : "...\n");
 }
 
 byte cola_lista(t_lista_ptr lista){

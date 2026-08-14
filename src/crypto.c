@@ -1,89 +1,68 @@
 #include "crypto.h"
+#include "util.h"
+
+/* Aplica el XOR de las cabeceras de ambas listas sobre el dato */
+static byte mezclar_cabeceras(byte dato, t_lista_ptr listaPass, t_lista_ptr listaHash){
+    return (byte)(dato ^ listaPass->dato ^ listaHash->dato);
+}
+
+/* Avanza ambas listas circulares en funcion de la semilla y de la longitud de la clave */
+static void avanzar_listas(byte semilla, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
+    *listaPass = rotar_char(*listaPass, semilla % get_primoA(lenPass));
+    *listaHash = rotar_char(*listaHash, semilla % get_primoB(lenPass));
+}
+
+/* Recorre el buffer aplicando la transformacion byte a byte indicada */
+static byte* aplicar_n(t_transformacion transformar, byte* buffer, int len,
+                       t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
+    byte* ret = (byte*)reservar_memoria(sizeof(byte) * (size_t)len, "el buffer codificado");
+    if (ret == NULL) {
+        return NULL;
+    }
+    for (int i = 0; i < len; i++){
+        ret[i] = transformar(buffer[i], listaPass, listaHash, lenPass);
+    }
+    return ret;
+}
 
 t_lista_ptr getListaPass(char* pass){
-    t_lista_ptr ret = NULL;
     byte* campo = hash_pass(pass);
-    int len = get_primoA(strlen(pass));
+    t_lista_ptr ret = crear_lista(campo, (unsigned int)get_primoA(strlen(pass)));
 
-    for (int i = 0; i < len; i++){
-        ret = crear_nodo (ret, campo[i]);
-    }
     free(campo);
     return ret;
 }
 
 t_lista_ptr getListaHash(int len){
-    t_lista_ptr ret = NULL;
     byte* campo = random_bytes(len);
+    t_lista_ptr ret = crear_lista(campo, (unsigned int)len);
 
-    for (int i = 0; i < len; i++){
-        ret = crear_nodo (ret, campo[i]);
-    }
     free(campo);
     return ret;
 }
 
 byte encode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
+    byte ret = mezclar_cabeceras(dato, *listaPass, *listaHash);
 
-    byte ret = 0;
-    byte a = (*listaPass)->dato;
-    byte b = (*listaHash)->dato;
-    
-    // XOR con las cabeceras.
-    ret = dato;
-    ret ^= a;
-    ret ^= b;
-    int rotacionA = ret % get_primoA(lenPass);
-    int rotacionB = ret % get_primoB(lenPass);
-
-    // rotar listas
-    *listaPass = rotar_char(*listaPass, rotacionA);
-    *listaHash = rotar_char(*listaHash, rotacionB);
+    /* Al codificar, las rotaciones se derivan del byte ya cifrado */
+    avanzar_listas(ret, listaPass, listaHash, lenPass);
     return ret;
 }
 
 byte decode(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
-    byte ret = 0;
-    int rotacionA = dato % get_primoA(lenPass);
-    int rotacionB = dato % get_primoB(lenPass);
-    
-    // XOR con las cabeceras.
-    byte a = (*listaPass)->dato;
-    byte b = (*listaHash)->dato;
-    ret = dato;
-    ret ^= a;
-    ret ^= b;
- 
-    // rotar lista de pass
-    *listaPass = rotar_char(*listaPass, rotacionA);
-    *listaHash = rotar_char(*listaHash, rotacionB);
-    
+    byte ret = mezclar_cabeceras(dato, *listaPass, *listaHash);
+
+    /* Al decodificar, el byte cifrado es la entrada: con el se replican las rotaciones */
+    avanzar_listas(dato, listaPass, listaHash, lenPass);
     return ret;
 }
 
 byte* encode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass){
-    byte* ret = (byte*)malloc(sizeof(byte) * len);
-    if (ret == NULL) {
-        printf("Error al asignar memoria para el buffer codificado.\n");
-        return NULL;
-    }
-    for (int i = 0; i < len; i++){
-        ret[i] = encode(buffer[i], listaPass, listaHash, lenPass);
-    }
-    return ret;
+    return aplicar_n(encode, buffer, len, listaPass, listaHash, lenPass);
 }
 
 byte* decode_n(byte* buffer, int len, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenpass){
-    byte* ret = (byte*)malloc(sizeof(byte) * len);
-    if (ret == NULL) {
-        printf("Error al asignar memoria para el buffer codificado.\n");
-        return NULL;
-    }
-
-    for (int i = 0; i < len; i++){
-        ret[i] = decode(buffer[i], listaPass, listaHash, lenpass);
-    }
-    return ret;
+    return aplicar_n(decode, buffer, len, listaPass, listaHash, lenpass);
 }
 
 byte* hash_pass(char* pass){
@@ -102,9 +81,8 @@ byte* hash_pass(char* pass){
 
 // Se reserva memoria para el hash de salida, que tendrá una longitud de len bytes.
     
-    byte* hash = (byte*)malloc(sizeof(byte) * len_salida);
+    byte* hash = (byte*)reservar_memoria(sizeof(byte) * len_salida, "el hash");
     if (hash == NULL) {
-        printf("Error al asignar memoria para el hash.\n");
         return NULL;
     }
     
@@ -140,15 +118,14 @@ byte* hash_pass(char* pass){
 
 byte* random_bytes(int n){
     
-    byte* bytes = (byte*)malloc(sizeof(byte) * n);
+    byte* bytes = (byte*)reservar_memoria(sizeof(byte) * (size_t)n, "los bytes aleatorios");
     if (bytes == NULL) {
-        printf("Error al asignar memoria para los bytes aleatorios.\n");
         return NULL;
     }
     memset(bytes, 0, n); // Inicializa la memoria a cero
 
     for (int i = 0; i < n; i++) {
-        bytes[i] = (byte)(rand() % 256); // Genera un byte aleatorio entre 0 y 255
+        bytes[i] = get_random_byte();
     }
 
     return bytes;

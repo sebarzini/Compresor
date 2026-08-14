@@ -1,4 +1,5 @@
 #include "primos.h"
+#include "util.h"
 #include <stdlib.h>
 
 /* Variables y funciones estaticas para el generador determinista (LCG) aislado del rand() global */
@@ -41,9 +42,8 @@ char* get_deterministic_hash(const char *input, int x, char *out) {
     
     local_srand(hash);
 
-    /* Generacion de caracteres en rango ASCII imprimible (33 '!' a 126 '~') para legibilidad del string en C */
     for (i = 0; i < x; i++) {
-        out[i] = (char)(33 + (local_rand() % 94));
+        out[i] = caracter_imprimible(local_rand());
     }
     out[x] = '\0';
 
@@ -53,7 +53,7 @@ char* get_deterministic_hash(const char *input, int x, char *out) {
 char* get_random_string(int y, char *out) {
     int i;
     for (i = 0; i < y; i++) {
-        out[i] = (char)(33 + (rand() % 94));
+        out[i] = caracter_imprimible((unsigned long)rand());
     }
     out[y] = '\0';
 
