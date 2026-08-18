@@ -1,0 +1,26 @@
+* Sacar palabra de n-bits de long_buff
+* Sacar long_buff de sizeof(long) de buffer_in
+* Leer buffer_in del archivo de entrada (TAMANO_BUFFER)
+
+- Mientras tengo buffer_in
+    - mientras tengo long_buff
+        - Sacar palabra de n-bits de long_buff
+            proceso palabra.
+
+Si tengo palabra de n_bits agrego padding y proceso la palabra.
+Agrego CRC.
+
+* Sacar palabra de n-bits de long_buff
+        palabra = 0
+        si buff_temp != 0
+            
+        sacar_bits = (n > sizeof(long_buff)-indice) ? sizeof(long_buff)-indice : n
+        palabra = palabra >> (sizeof(long_buff)-indice+n)
+        long_buff = long_buff << n
+        si saca_bits > n
+            Procesar palabra
+        sino
+            buff_temp = palabra
+
+* Sacar long_buff de sizeof(long) de buffer_in
+* Leer buffer_in del archivo de entrada (TAMANO_BUFFER)

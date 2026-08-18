@@ -24,7 +24,7 @@ FILE* abrir_archivo(const char* path, boolean escribir) {
  * @param archivo - Puntero al archivo a cerrar.
  */
 void cerrar_archivo(FILE* archivo){
-    if (archivo == NULL) {
+    if (archivo != NULL) {
         fclose(archivo);
     }
 }
@@ -53,14 +53,11 @@ void escribir_file(FILE* archivo, byte* buffer, size_t len){
  * @param len - Tamano del buffer en bytes.
  * @return byte* - Puntero al buffer de bytes leido.
  */
-byte* leer_file(FILE* archivo, size_t* bytes_read, size_t len){
+byte* leer_file(FILE* archivo){
     byte* buffer = NULL;
-    size_t to_read = len;
+    size_t bytes_read = 0;
+    size_t to_read = TAMANO_BUFFER;
     size_t read_count = 0;
-
-    if (bytes_read != NULL) {
-        *bytes_read = 0;
-    }
 
     if (archivo == NULL) {
         return NULL;
@@ -88,9 +85,7 @@ byte* leer_file(FILE* archivo, size_t* bytes_read, size_t len){
 
     read_count = fread(buffer, 1, to_read, archivo);
 
-    if (bytes_read != NULL) {
-        *bytes_read = read_count;
-    }
+    bytes_read = read_count;
 
     if (read_count == 0 && ferror(archivo) != 0) {
         free(buffer);

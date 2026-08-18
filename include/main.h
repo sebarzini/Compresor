@@ -99,12 +99,18 @@ void parse(int argc, char* argv[], t_config* cfg){
 
 
 void comprimir(t_config cfg){
+ //   FILE* archivo_in = NULL;
+  //  size_t bytes_leidos = 0;
+
     LOG("Iniciando la compresion");
     printf("Comprimir: %s\n", cfg.file_in);
     /* Recorrer archivo de entrada */
     LOG("Abriendo archivo %s", cfg.file_in);
     /*      Contabilizar repeticiones de simbolos */
-    LOG("Contabilizando repeticiones de simbolos");
+//        archivo_in = abrir_archivo(cfg.file_in);
+ //       while (bytes_leidos = leer_archivo(archivo_in) > 0) {
+            LOG("Contabilizando repeticiones de simbolos");
+  //      }
     /* Armar canonico de huffman */
     LOG("Armando arbol de huffman");
     /* Si tiene password */
@@ -130,6 +136,7 @@ void comprimir(t_config cfg){
     /* Grabo el CRC en el archivo de salida */
     LOG("Guardo el CRC en el archivo de salida");
     LOG("Terminado la compresion");
+    //cerrar_archivo(archivo_in);
 }
 
 void descomprimir(t_config cfg){
