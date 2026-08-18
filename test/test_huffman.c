@@ -1,6 +1,6 @@
 #include "huffman.h"
 
-void test_palabras() {
+void test_print_palabras() {
     printf("[TEST 1] Imprimir palabras\n");
 
     print_bin(0, 8);
@@ -13,11 +13,11 @@ void test_palabras() {
 
 int main() {
     LIMPIAR_PANTALLA();
-    printf("================================================================\n");
+    printf("=================================\n");
     printf("    PRUEBAS DE HUFFMAN\n");
-    printf("================================================================\n\n");
+    printf("=================================\n\n");
 
-    test_palabras();
+    test_print_palabras();
 
     return 0;
 }
