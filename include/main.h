@@ -1,8 +1,17 @@
+#ifndef MTH_MAIN_H
+#define MTH_MAIN_H
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "debug.h"
 #include "Log.h"
 #include "SO.h"
+#include "tipos_gen.h"
+
+#define MIN_BITS 1
+#define MAX_BITS 16
+#define MAX_PASS_LEN 256
 
 typedef enum {
     MODO_NINGUNO,
@@ -54,47 +63,87 @@ void mostrar_ayuda() {
     printf("Opciones:\n");
     printf("  -i <archivo>     Archivo de entrada (requerido para -c y -d)\n");
     printf("  -o <archivo>     Archivo de salida (opcional: por defecto <entrada>.mzi\n");
-    printf("  -n <bits>        Tamano de palabra en bits (opcional: defecto %d)\n", 4);
+    printf("  -n <bits>        Tamano de palabra en bits (opcional: defecto %d, rango %d-%d)\n", 4, MIN_BITS, MAX_BITS);
     printf("  -p <clave>       Clave de cifrado (opcional: si no se provee, no se encripta)\n");
     LOG("Terminado la ayuda");
 }
 
-void parse(int argc, char* argv[], t_config* cfg){
+/* Devuelve el valor asociado a una opcion, o NULL si el usuario no lo proporciono.
+   Avanza el indice solo cuando existe un argumento siguiente. */
+static const char* valor_opcion(int argc, char* argv[], int* i, char opcion) {
+    if (*i + 1 >= argc) {
+        printf("Error: la opcion -%c requiere un valor.\n", opcion);
+        return NULL;
+    }
+    (*i)++;
+    return argv[*i];
+}
+
+boolean parse(int argc, char* argv[], t_config* cfg){
     LOG("Iniciando parseo de argumentos");
     int i;
+    const char* valor;
+
     for (i = 1; i < argc; i++) {
-        if (argv[i][0] == '-') {
-            switch (argv[i][1]) {
-                case 'c':
-                    cfg->modo = MODO_COMPRIMIR;
-                    break;
-                case 'd':
-                    cfg->modo = MODO_DESCOMPRIMIR;
-                    break;
-                case 'h':
-                    cfg->modo = MODO_AYUDA;
-                    break;
-                case 'a':
-                    cfg->modo = MODO_ABOUT;
-                    break;
-                case 'i':
-                    cfg->file_in = argv[++i];
-                    break;
-                case 'o':
-                    cfg->file_out = argv[++i];
-                    break;
-                case 'n':
-                    cfg->n_bits = atoi(argv[++i]);
-                    break;
-                case 'p':
-                    cfg->password = argv[++i];
-                    break;
-                default:
-                    break;
-            }
+        if (argv[i][0] != '-' || argv[i][1] == '\0') {
+            printf("Error: argumento no reconocido '%s'.\n", argv[i]);
+            return FALSE;
+        }
+        switch (argv[i][1]) {
+            case 'c':
+                cfg->modo = MODO_COMPRIMIR;
+                break;
+            case 'd':
+                cfg->modo = MODO_DESCOMPRIMIR;
+                break;
+            case 'h':
+                cfg->modo = MODO_AYUDA;
+                break;
+            case 'a':
+                cfg->modo = MODO_ABOUT;
+                break;
+            case 'i':
+                valor = valor_opcion(argc, argv, &i, 'i');
+                if (valor == NULL) return FALSE;
+                cfg->file_in = valor;
+                break;
+            case 'o':
+                valor = valor_opcion(argc, argv, &i, 'o');
+                if (valor == NULL) return FALSE;
+                cfg->file_out = valor;
+                break;
+            case 'n':
+                valor = valor_opcion(argc, argv, &i, 'n');
+                if (valor == NULL) return FALSE;
+                cfg->n_bits = atoi(valor);
+                if (cfg->n_bits < MIN_BITS || cfg->n_bits > MAX_BITS) {
+                    printf("Error: -n debe estar entre %d y %d.\n", MIN_BITS, MAX_BITS);
+                    return FALSE;
+                }
+                break;
+            case 'p':
+                valor = valor_opcion(argc, argv, &i, 'p');
+                if (valor == NULL) return FALSE;
+                if (valor[0] == '\0' || strlen(valor) > MAX_PASS_LEN) {
+                    printf("Error: la clave debe tener entre 1 y %d caracteres.\n", MAX_PASS_LEN);
+                    return FALSE;
+                }
+                cfg->password = valor;
+                break;
+            default:
+                printf("Error: opcion desconocida '%s'.\n", argv[i]);
+                return FALSE;
         }
     }
+
+    if ((cfg->modo == MODO_COMPRIMIR || cfg->modo == MODO_DESCOMPRIMIR) &&
+        cfg->file_in == NULL) {
+        printf("Error: -i <archivo> es obligatorio para -c y -d.\n");
+        return FALSE;
+    }
+
     LOG("Terminado parseo de argumentos");
+    return TRUE;
 }
 
 
@@ -161,3 +210,5 @@ void descomprimir(t_config cfg){
     /* terminamos la aplicacion de forma segura*/
     LOG("Terminado la descompresion");
 }
+
+#endif /* MTH_MAIN_H */

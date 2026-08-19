@@ -13,9 +13,11 @@
 // __func__ o __FUNCTION__ nombre de la funcion en ejecucion actual
 
 // ============================================================================
-//   CONFIGURACIÓN: INSERTA O BORRA ESTE DEFINE PARA ENTRAR O NO EN MODO DEBUG
+//   CONFIGURACIÓN: el modo debug se activa unicamente desde el build
+//   (CMAKE_BUILD_TYPE=Debug define MODO_DEBUG). Nunca debe quedar activo en
+//   una compilacion Release: la traza expone rutas internas del sistema de
+//   archivos y detalles de ejecucion.
 // ============================================================================
-#define MODO_DEBUG 
 
 // ============================================================================
 //   DEFINICIÓN DE MACROS DE DEPURACIÓN
@@ -28,7 +30,7 @@
         printf("[TRACE] (%s:%d): " fmt, __FILE__, __LINE__, ##__VA_ARGS__)
 
     #define DEBUG_WARN_IF(condicion, fmt, ...) \
-        if (condicion) { printf("[WARN] " fmt, ##__VA_ARGS__); }
+        do { if (condicion) { printf("[WARN] " fmt, ##__VA_ARGS__); } } while (0)
 
 #else
 
@@ -37,7 +39,7 @@
     // Lo ignora por completo en la mismísima fase de preprocesamiento.
     #define DEBUG_PRINT(fmt, ...)          ((void)0)
     #define DEBUG_TRACE(fmt, ...)          ((void)0)
-    #define DEBUG_WARN_IF(condicion, fmt, ...) ((void)0)
+    #define DEBUG_WARN_IF(condicion, fmt, ...) do { (void)0; } while (0)
 
 #endif
 

@@ -78,6 +78,11 @@ byte* leer_file(FILE* archivo){
         return NULL;
     }
 
+    /* Un tamano tomado del archivo no debe traducirse en una reserva ilimitada */
+    if (to_read > MAX_LECTURA_BYTES) {
+        return NULL;
+    }
+
     buffer = (unsigned char*)malloc(to_read);
     if (buffer == NULL) {
         return NULL;

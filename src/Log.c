@@ -1,10 +1,46 @@
+#if !defined(_WIN32) && !defined(_WIN64) && !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 # include "Log.h"
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#define MTH_OPEN(ruta) _open((ruta), _O_WRONLY | _O_CREAT | _O_TRUNC, _S_IREAD | _S_IWRITE)
+#define MTH_FDOPEN(fd) _fdopen((fd), "w")
+#else
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#define MTH_OPEN(ruta) open((ruta), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)
+#define MTH_FDOPEN(fd) fdopen((fd), "w")
+#endif
 
 static FILE *log_file = NULL;
 
+/* El log puede contener rutas y metadatos del usuario: se crea accesible
+   unicamente por su propietario (0600). */
 static void abrir_log() {
+    int fd;
+
+    if (log_file != NULL) {
+        return;
+    }
+
+    fd = MTH_OPEN(MTH_LOG_PATH);
+    if (fd < 0) {
+        return;
+    }
+
+    log_file = MTH_FDOPEN(fd);
     if (log_file == NULL) {
-        log_file = fopen(MTH_LOG_PATH, "w");
+#if defined(_WIN32) || defined(_WIN64)
+        _close(fd);
+#else
+        close(fd);
+#endif
     }
 }
 
