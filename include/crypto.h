@@ -8,6 +8,9 @@
 
 #define RANDOM_INIT srand(time(NULL));
 
+/* Transformacion byte a byte sobre el estado de las listas circulares (encode / decode) */
+typedef byte (*t_transformacion)(byte dato, t_lista_ptr* listaPass, t_lista_ptr* listaHash, unsigned int lenPass);
+
 byte* hash_pass(char* pass);
 byte* random_bytes(int n);
 

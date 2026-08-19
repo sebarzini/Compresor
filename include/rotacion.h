@@ -16,6 +16,7 @@ byte rotar(byte b, int n);
 t_lista_ptr rotar_char(t_lista_ptr lista, int n);
 
 void print_bin8(const char* texto, unsigned char num);
+void imprimir_lista(const char* etiqueta, t_lista_ptr lista, size_t limite);
 t_lista_ptr crear_nodo(t_lista_ptr nodo, byte dato);
 t_lista_ptr liberar_nodo(t_lista_ptr nodo);
 void vaciar_lista(t_lista_ptr lista);

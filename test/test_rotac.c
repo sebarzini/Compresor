@@ -2,39 +2,11 @@
 #include "tipos_gen.h"
 #include "rotacion.h"
 
-/* 
- * Objetivo: Imprimir la representación binaria de 8 bits de un byte.
- * Entrada : texto (const char*) - Etiqueta descriptiva.
- *           num (unsigned char) - Valor a convertir e imprimir.
- * Salida  : Ninguna.
- */
-void print_bin8(const char* texto, unsigned char num) {
-    int i;
-    printf("  %-22s | ", texto);
-    for (i = 7; i >= 0; i--) {
-        putchar((num & (1 << i)) ? '1' : '0');
-        if (i == 4) putchar(' ');
-    }
-    printf(" (0x%02X / %3d)\n", num, num);
-}
+#define LIMITE_IMPRESION 64
 
-/* 
- * Objetivo: Formatear e imprimir en consola el contenido de una lista circular.
- * Entrada : lista (t_lista_ptr) - Puntero a la lista.
- * Salida  : Ninguna.
- */
-static void imprimir_lista(t_lista_ptr lista) {
-    t_lista_ptr actual = lista;
-    printf("  Estado Lista: ");
-    if (lista != NULL) {
-        do {
-            printf("[0x%02X|%3d] -> ", actual->dato, actual->dato);
-            actual = (t_lista_ptr)actual->siguiente;
-        } while (actual != lista);
-        printf("(inicio)\n");
-    } else {
-        printf("VACIA\n");
-    }
+/* Muestra el estado de la lista circular de trabajo */
+static void mostrar_lista(t_lista_ptr lista) {
+    imprimir_lista("Estado Lista", lista, LIMITE_IMPRESION);
 }
 
 /* 
@@ -91,7 +63,7 @@ static void test_crear_nodos(t_lista_ptr* lista) {
     *lista = crear_nodo(*lista, 0xA0);
     *lista = crear_nodo(*lista, 0xB4);
 
-    imprimir_lista(*lista);
+    mostrar_lista(*lista);
     printf("  [OK] Nodos creados e insertados correctamente.\n\n");
 }
 
@@ -126,19 +98,19 @@ static void test_rotar_lista(t_lista_ptr* lista) {
     printf("| 4. PRUEBA DE ROTAR_CHAR SOBRE LA LISTA                                  |\n");
     printf("+-------------------------------------------------------------------------+\n");
 
-    imprimir_lista(*lista);
+    mostrar_lista(*lista);
 
     printf("  Rotando 1 bit a la izquierda...\n");
     *lista = rotar_char(*lista, 1);
-    imprimir_lista(*lista);
+    mostrar_lista(*lista);
 
     printf("  Rotando 5 bits a la derecha...\n");
     *lista = rotar_char(*lista, -5);
-    imprimir_lista(*lista);
+    mostrar_lista(*lista);
 
     printf("  Rotando 7 bits a la izquierda...\n");
     *lista = rotar_char(*lista, 7);
-    imprimir_lista(*lista);
+    mostrar_lista(*lista);
 
     printf("  [OK] Operaciones de rotación en lista completadas.\n\n");
 }
@@ -159,7 +131,7 @@ static void test_liberacion_memoria(t_lista_ptr* lista) {
         nodo_a_eliminar = (t_lista_ptr)(*lista)->siguiente;
         printf("  Liberando segundo nodo (0x%02X)...\n", nodo_a_eliminar->dato);
         liberar_nodo(nodo_a_eliminar);
-        imprimir_lista(*lista);
+        mostrar_lista(*lista);
     }
 
     printf("  Vaciando lista completa...\n");
@@ -167,7 +139,7 @@ static void test_liberacion_memoria(t_lista_ptr* lista) {
     *lista = NULL;
     
     assert(*lista == NULL);
-    imprimir_lista(*lista);
+    mostrar_lista(*lista);
     printf("  [OK] Memoria liberada correctamente.\n\n");
 }
 

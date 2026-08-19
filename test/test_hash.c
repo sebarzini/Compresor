@@ -1,30 +1,5 @@
 #include "crypto.h"
-
-/* ============================================================================
- * FUNCIONES AUXILIARES
- * ============================================================================ */
-
-void imprimir_lista(const char* etiqueta, t_lista_ptr lista, size_t limit) {
-    size_t count = 0;
-    printf("%-22s: ", etiqueta);
-    while (lista != NULL && count < limit) {
-        printf("- %02X ", (byte)lista->dato);
-        lista = lista->siguiente;
-        count++;
-    }
-    printf("\n");
-}
-
-void imprimir_hex(const char* etiqueta, const byte* buffer, size_t len, size_t ptrint_limit) {
-    printf("%-22s (%zu bytes): ", etiqueta, len);
-    /* Imprime un máximo de ptrint_limit bytes para no inundar la consola si el primo es grande */
-    size_t limit = (len > ptrint_limit) ? ptrint_limit : len; 
-    for (size_t i = 0; i < limit; i++) {
-        printf("%02X ", buffer[i]);
-    }
-    if (len > ptrint_limit) printf("... ");
-    printf("\n");
-}
+#include "util.h"
 
 /* ============================================================================
  * PRUEBAS
