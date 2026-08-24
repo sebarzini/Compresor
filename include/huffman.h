@@ -3,12 +3,8 @@
 #include "Log.h"
 #include "SO.h"
 
-<<<<<<< HEAD
-void operacion(unsigned long palabra, int n_bits);
-void print_bin(unsigned long numero, int bits);
-void ejecutar(unsigned long numero, int bits, void (*operacion)(unsigned long, int));
-=======
 byte bit(byte b, int n);
-void operacion(long palabra, int n_bits);
-void print_bin(unsigned long numero, int bits);
->>>>>>> f3dac2d40abded84459e07c0830c073a99df04ac
+void operacion(LONG64 palabra, int n_bits);
+void print_bin(LONG64 numero, int bits);
+void ejecutar(LONG64 numero, int bits, void (*operacion)(LONG64, int));
+void procesar(const char* archivo_in, const char* archivo_out);

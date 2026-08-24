@@ -6,15 +6,15 @@ void test_print_palabras() {
     operacion(0, 8);
     print_bin(2, 8);
     operacion(4, 8);
-    print_bin(64, sizeof(long)*8);
-    operacion(65, sizeof(long)*8);
-    print_bin(66, sizeof(long)*8);
+    print_bin(64, sizeof(LONG64)*8);
+    operacion(65, sizeof(LONG64)*8);
+    print_bin(66, sizeof(LONG64)*8);
 }
 
 void test_separacion() {
     printf("\n\n[TEST 2] Separacion palabras\n");
-    ejecutar(106354684231863, 8, operacion);
-    ejecutar(106354684231863, 4, operacion);
+    ejecutar(4563, 8, operacion);
+    ejecutar(4563, 4, operacion);
 }
 
 int main() {
