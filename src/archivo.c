@@ -55,7 +55,7 @@ void escribir_file(FILE* archivo, byte* buffer, size_t len){
  */
 byte* leer_file(FILE* archivo){
     byte* buffer = NULL;
-    size_t bytes_read = 0;
+//    size_t bytes_read = 0;
     size_t to_read = TAMANO_BUFFER;
     size_t read_count = 0;
 
@@ -85,7 +85,7 @@ byte* leer_file(FILE* archivo){
 
     read_count = fread(buffer, 1, to_read, archivo);
 
-    bytes_read = read_count;
+//    bytes_read = read_count;
 
     if (read_count == 0 && ferror(archivo) != 0) {
         free(buffer);
