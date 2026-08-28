@@ -18,8 +18,9 @@
 //   DETECCIÓN Y CONFIGURACIÓN ESPECÍFICA DE CADA S.O.
 // ============================================================================
 #if defined(_WIN32) || defined(_WIN64)
-#include <direct.h> // Para _mkdir en Windows
-
+    #include <direct.h> // Para _mkdir en Windows
+    typedef unsigned __int64 LONG64;
+    
     #ifndef S_ISDIR
     #define S_ISDIR(mode) (((mode) & _S_IFDIR) == _S_IFDIR)
     #endif
@@ -32,9 +33,10 @@
     #define OS_NAME "Windows"
     #define NEWLINE "\r\n"
     #define LIMPIAR_PANTALLA() system("cls")
-
-#elif defined(__linux__) || defined(__APPLE__)
-
+    
+    #elif defined(__linux__) || defined(__APPLE__)
+    typedef unsigned long LONG64;
+    
     #ifndef S_ISDIR
         #define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
     #endif
@@ -47,6 +49,7 @@
     #define OS_NAME "Linux/Unix"
     #define NEWLINE "\n"
     #define LIMPIAR_PANTALLA() system("clear")
+    #define LONG64 unsigned long
 
 #else
     #define PATH_SEP '/'

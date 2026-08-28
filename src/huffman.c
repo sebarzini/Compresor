@@ -4,12 +4,13 @@ byte bit(byte b, int n){
     return (b >> n) & 1;
 }
 
-void print_bin(unsigned long numero, int bits) {
+/* CONCEPTO */
+void print_bin(LONG64 numero, int bits) {
     int total_bits_long;
     int i;
-    unsigned long mascara;
+    LONG64 mascara;
 
-    total_bits_long = (int)(sizeof(unsigned long) * 8);
+    total_bits_long = (int)(sizeof(LONG64) * 8);
 
     /* Validacion de limites para la cantidad de bits a mostrar */
     if (bits <= 0) return;
@@ -31,18 +32,20 @@ void print_bin(unsigned long numero, int bits) {
 }
 
 
-void operacion(unsigned long palabra, int n_bits){
+/* CONCEPTO */
+void operacion(LONG64 palabra, int n_bits){
     print_bin(palabra, n_bits);
 }
 
-void ejecutar(unsigned long numero, int bits, void (*operacion)(unsigned long, int)) {
-    unsigned long ret = 0;
+/* CONCEPTO */
+void ejecutar(LONG64 numero, int bits, void (*operacion)(LONG64, int)) {
+    LONG64 ret = 0;
     int i_ret = 0;
     int total_bits_long;
     int i;
-    unsigned long mascara;
+    LONG64 mascara;
 
-    total_bits_long = (int)(sizeof(long) * 8);
+    total_bits_long = (int)(sizeof(LONG64) * 8);
 
     /* Validacion de limites para la cantidad de bits a mostrar */
     if (bits <= 0) return;
@@ -50,7 +53,7 @@ void ejecutar(unsigned long numero, int bits, void (*operacion)(unsigned long, i
 
     /* Muestra bit por bit desde el mas significativo del rango solicitado hasta el bit 0 */
     LOG("numero: %lu - bits: %d", numero, bits);
-    for (i = sizeof(long)*8 - 1; i >= 0; i--) {
+    for (i = sizeof(LONG64)*8 - 1; i >= 0; i--) {
         LOG("i: %lu", i);
         mascara = 1UL << i;
         LOG("mascara: %lu", mascara);
