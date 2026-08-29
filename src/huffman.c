@@ -1,5 +1,6 @@
 #include "huffman.h"
 
+/* CONCEPTO */
 byte bit(byte b, int n){
     return (b >> n) & 1;
 }
@@ -70,3 +71,14 @@ void ejecutar(LONG64 numero, int bits, void (*operacion)(LONG64, int)) {
     }
 }
 
+void procesar(const char* archivo_in, const char* archivo_out){
+    FILE* in = fopen(archivo_in, "rb");
+    FILE* out = fopen(archivo_out, "wb");
+    byte b;
+//    char[(int)sizeof(LONG64)] buffer;
+    while (fread(&b, sizeof(byte), 1, in) > 0){
+        fwrite(&b, sizeof(byte), 1, out);
+    }
+    fclose(in);
+    fclose(out);
+}
