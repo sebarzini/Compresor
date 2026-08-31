@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "Log.h"
 #include "SO.h"
+#include "archivo.h"
 
 typedef enum {
     MODO_NINGUNO,
@@ -99,44 +100,36 @@ void parse(int argc, char* argv[], t_config* cfg){
 
 
 void comprimir(t_config cfg){
- //   FILE* archivo_in = NULL;
-  //  size_t bytes_leidos = 0;
+    FILE* file_in = NULL;            //Archivo a leer
+    byte buffer_file[TAMANO_BUFFER]; // Buffer de lectura del archivo
+    size_t bytes_leidos;             // Cantidad de bytes leidos del archivo
+    size_t leidos_file;              // Cantidad de bytes por bytes de file (indice)
+    LONG64 buffer_bytes;             // Buffer del buffer buffer_file (64 bits)
 
+    memset(buffer_file, '\0', sizeof(byte) * TAMANO_BUFFER);
     LOG("Iniciando la compresion");
     printf("Comprimir: %s\n", cfg.file_in);
     /* Recorrer archivo de entrada */
     LOG("Abriendo archivo %s", cfg.file_in);
-    /*      Contabilizar repeticiones de simbolos */
-//        archivo_in = abrir_archivo(cfg.file_in);
- //       while (bytes_leidos = leer_archivo(archivo_in) > 0) {
-            LOG("Contabilizando repeticiones de simbolos");
-  //      }
-    /* Armar canonico de huffman */
-    LOG("Armando arbol de huffman");
-    /* Si tiene password */
-    LOG("Controlo la existencia de password");
-    /*      Genero hash de pass y hash crypto */
-        LOG("Genero hash de pass y hash crypto");
-        /*      Encripto y guardo el hash en el archivo de salida */
-        LOG("Encripto y guardo el hash en el archivo de salida");
-        /* Guardo el arbol en el archivo (encriptado si hay pass)*/
-        LOG("Guardo el arbol en el archivo de salida");
-    /* Recorrer archivo de entrada */
-    LOG("Abriendo archivo de salida");
-    /*      Voy cargando buffer de entrada */
-        LOG("Cargo el buffer de entrada");
-        /*      Claculando el CRC */
-        LOG("Calculo el CRC");
-        /*      Cuando el buffer se llena, voy comprimiendo y pasando al buffer de salida */
-        LOG("Comprimiendo y pasando al buffer de salida");
-        /*      Cuando el buffer de salida se llena, voy guardandolo en disco (encriptado si hay pass) */
-        LOG("Grabo el buffer en el archivo de salida y libero");
-    /* Cuando termina el archivo grabo el buffer de salida (con el ultimo padding) */
-    LOG("Grabo en el archivo de salida lo que queda en el buffer y padding");
-    /* Grabo el CRC en el archivo de salida */
-    LOG("Guardo el CRC en el archivo de salida");
+    file_in = abrir_archivo(cfg.file_in, FALSE);
+
+    leidos_file = 0;
+    while ((bytes_leidos = LEER_ARCHIVO(file_in, buffer_file)) > 0) {
+        LOG("Leyendo %d bytes", bytes_leidos);
+
+        do{
+            memcpy(&buffer_bytes, (buffer_file + leidos_file), sizeof(LONG64));
+            LOG("buffer_bytes: %lu", buffer_bytes);
+            LOG("n_bits: %d", cfg.n_bits);
+    
+
+
+            leidos_file += sizeof(LONG64);
+        } while (leidos_file < sizeof(LONG64));
+    }
+
     LOG("Terminado la compresion");
-    //cerrar_archivo(archivo_in);
+    cerrar_archivo(file_in);
 }
 
 void descomprimir(t_config cfg){

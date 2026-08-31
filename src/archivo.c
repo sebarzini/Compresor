@@ -29,6 +29,7 @@ void cerrar_archivo(FILE* archivo){
     }
 }
 
+
 /**
  * Escribe un buffer de bytes en un archivo abierto en modo de binario.
  *
@@ -50,49 +51,38 @@ void escribir_file(FILE* archivo, byte* buffer, size_t len){
  * los bytes leidos.
  *
  * @param archivo - Puntero al archivo abierto para lectura.
- * @param len - Tamano del buffer en bytes.
- * @return byte* - Puntero al buffer de bytes leido.
+ * @param byte* - Puntero al buffer de bytes leido.
+ * @return len - Tamano del buffer leidos en bytes.
  */
-byte* leer_file(FILE* archivo){
-    byte* buffer = NULL;
-//    size_t bytes_read = 0;
-    size_t to_read = TAMANO_BUFFER;
-    size_t read_count = 0;
+size_t leer_file(FILE* archivo, byte* buffer){
+    long current_pos;
+    long end_pos;
+    size_t to_read;
+    size_t read_count;
 
-    if (archivo == NULL) {
-        return NULL;
-    }
+    if (archivo == NULL || buffer == NULL) return 0;
 
-    /* Si count es 0, calcula dinámicamente los bytes restantes hasta el EOF */
-    if (to_read == 0) {
-        long current_pos = ftell(archivo);
-        if (current_pos < 0) return NULL;
-        if (fseek(archivo, 0, SEEK_END) != 0) return NULL;
-        long end_pos = ftell(archivo);
-        if (end_pos < 0 || end_pos < current_pos) return NULL;
-        fseek(archivo, current_pos, SEEK_SET);
-        to_read = (size_t)(end_pos - current_pos);
-    }
+/* Guardar posicion actual */
+    current_pos = ftell(archivo);
+    if (current_pos < 0) return 0;
 
-    if (to_read == 0) {
-        return NULL;
-    }
+    /* Calcular posicion final */
+    if (fseek(archivo, 0, SEEK_END) != 0) return 0;
+    end_pos = ftell(archivo);
 
-    buffer = (unsigned char*)malloc(to_read);
-    if (buffer == NULL) {
-        return NULL;
-    }
+    /* Validar y restaurar posicion inicial */
+    if (fseek(archivo, current_pos, SEEK_SET) != 0) return 0;
+    if (end_pos < 0 || end_pos < current_pos) return 0;
+
+    /* Acotar tamano de lectura al menor entre lo restante y TAMANO_BUFFER */
+    to_read = (size_t)(end_pos - current_pos);
+    if (to_read == 0) return 0;
+
+    to_read = (to_read > TAMANO_BUFFER) ? TAMANO_BUFFER : to_read;
 
     read_count = fread(buffer, 1, to_read, archivo);
 
-//    bytes_read = read_count;
-
-    if (read_count == 0 && ferror(archivo) != 0) {
-        free(buffer);
-        return NULL;
-    }
-
-    return buffer;
+    return read_count;
 }
 
 
