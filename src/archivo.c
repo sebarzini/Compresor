@@ -11,11 +11,7 @@ FILE* abrir_archivo(const char* path, boolean escribir) {
     if (path == NULL) {
         return NULL;
     }
-    if (escribir) {
-        return fopen(path, "wb");
-    } else {
-        return fopen(path, "rb");
-    }
+    return fopen(path, escribir ? FOPEN_WRITE_BIN : FOPEN_READ_BIN);
 }
 
 /**
